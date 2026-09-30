@@ -152,33 +152,44 @@ Pronto e verificado no navegador:
 - Ofertas e página da casa (horários, endereço, pagamento)
 - Esquema do banco com RLS e seed de desenvolvimento
 
+- Área administrativa: painel, pedidos com avanço de status e esgotar item
+- Adaptador Supabase implementando o mesmo contrato do seed
+
 Ainda **não** construído:
 
-- **Área administrativa** (dashboard, pedidos, produtos, categorias, clientes,
-  configurações) — as regras de domínio e a ação `advanceOrderStatus` já
-  existem, falta a interface
-- **Adaptador Supabase** — o esquema está escrito, mas o `DataSource` do
-  Supabase ainda não foi ligado; com as variáveis definidas, `getDataSource()`
-  falha alto de propósito em vez de servir dados errados em silêncio
 - **Autenticação** — o modelo separa cliente de usuário administrativo e a RLS
-  já depende disso, mas não há tela de login
+  já depende disso, mas não há tela de login. Enquanto não houver, o admin
+  fica aberto a quem souber a URL: dá para demonstrar, não para entregar a um
+  restaurante.
+- **Criar e editar categoria** no admin — produtos já são editáveis
+- **Verificação do adaptador Supabase contra um banco real** — o código está
+  escrito e tipado contra o esquema das migrations, mas nunca rodou numa
+  instância; até isso acontecer, trate-o como não testado
 
 ---
 
 ## Banco
 
-`supabase/migrations/0001_init.sql` cria o esquema completo. Para aplicar:
+As migrations em `supabase/migrations/` criam o esquema completo com RLS.
+Para aplicar:
 
 ```bash
 supabase db push
 ```
 
-Depois defina as variáveis e o adaptador passa a ser usado:
+Depois defina as variáveis e `getDataSource()` passa a falar com o banco em
+vez do seed — sem tocar em nenhuma tela:
 
 ```
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
 ```
+
+A chave de serviço fica só no servidor e existe para duas coisas que o
+navegador não pode fazer: gravar pedido com preço calculado no servidor e ler
+pedido de quem comprou sem conta. Quando a autenticação entrar, a leitura do
+admin passa a usar a sessão do usuário e essa chave encolhe para só a escrita.
 
 ---
 
