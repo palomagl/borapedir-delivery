@@ -24,7 +24,7 @@ import {
   type ProductRow,
   type StoreRow,
 } from "@/server/supabase/rows";
-import type { DataSource, NewOrder, OrderFilter } from "./source";
+import type { DataSource, NewOrder, OrderFilter, SaveProductInput } from "./source";
 
 /**
  * Implementação do contrato sobre Postgres.
@@ -136,6 +136,56 @@ export const supabaseDataSource: DataSource = {
       .single<ProductRow>();
 
     if (error) fail("setProductAvailability", error);
+    return toProduct(data);
+  },
+
+  async saveProduct(storeId: ID, input: SaveProductInput): Promise<Product> {
+    const client = serviceClient();
+
+    const values = {
+      store_id: storeId,
+      category_id: input.categoryId,
+      slug: input.slug,
+      name: input.name,
+      description: input.description,
+      image_url: input.imageUrl,
+      price_cents: input.priceCents,
+      promo_price_cents: input.promoPriceCents,
+      available: input.available,
+      featured: input.featured,
+    };
+
+    if (input.id) {
+      // O update não toca em option_groups: editar o nome de um produto não
+      // pode apagar os adicionais dele.
+      const { data, error } = await client
+        .from("products")
+        .update(values)
+        .eq("store_id", storeId)
+        .eq("id", input.id)
+        .select(PRODUCT_SELECT)
+        .single<ProductRow>();
+
+      if (error) fail("saveProduct.update", error);
+      return toProduct(data);
+    }
+
+    // Produto novo entra no fim da categoria.
+    const { count, error: countError } = await client
+      .from("products")
+      .select("id", { count: "exact", head: true })
+      .eq("store_id", storeId)
+      .eq("category_id", input.categoryId);
+
+    if (countError) fail("saveProduct.count", countError);
+
+    const { data, error } = await client
+      .from("products")
+      .insert({ ...values, sort_order: count ?? 0 })
+      .select(PRODUCT_SELECT)
+      .single<ProductRow>();
+
+    if (error) fail("saveProduct.insert", error);
     return toProduct(data);
   },
 

@@ -3,7 +3,7 @@ import { seedDataSource } from "./seed-source";
 import { supabaseDataSource } from "./supabase-source";
 import type { DataSource } from "./source";
 
-export type { DataSource, NewOrder, OrderFilter } from "./source";
+export type { DataSource, NewOrder, OrderFilter, SaveProductInput } from "./source";
 
 /**
  * Ponto único de troca de fonte de dados.

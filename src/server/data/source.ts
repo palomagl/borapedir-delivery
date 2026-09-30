@@ -28,12 +28,28 @@ export interface DataSource {
   /** Esgotar e reativar item é a operação mais frequente do balcão. */
   setProductAvailability(storeId: ID, productId: ID, available: boolean): Promise<Product>;
 
+  /** Cria quando não há id, atualiza quando há. Não mexe nos grupos de opção. */
+  saveProduct(storeId: ID, input: SaveProductInput): Promise<Product>;
+
   listOrders(storeId: ID, filter?: OrderFilter): Promise<Order[]>;
   getOrder(storeId: ID, orderId: ID): Promise<Order | null>;
   createOrder(input: NewOrder): Promise<Order>;
   updateOrderStatus(storeId: ID, orderId: ID, status: OrderStatus): Promise<Order>;
 
   listCustomers(storeId: ID): Promise<Customer[]>;
+}
+
+export interface SaveProductInput {
+  id?: ID;
+  categoryId: ID;
+  slug: string;
+  name: string;
+  description: string | null;
+  imageUrl: string | null;
+  priceCents: number;
+  promoPriceCents: number | null;
+  available: boolean;
+  featured: boolean;
 }
 
 export interface OrderFilter {

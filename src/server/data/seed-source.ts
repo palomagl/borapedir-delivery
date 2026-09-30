@@ -9,7 +9,7 @@ import type {
 } from "@/domain/types";
 import { seedCategories, seedProducts, seedStore } from "./seed/catalog";
 import { seedCustomers, seedOrders } from "./seed/operations";
-import type { DataSource, NewOrder, OrderFilter } from "./source";
+import type { DataSource, NewOrder, OrderFilter, SaveProductInput } from "./source";
 
 /**
  * Fonte de dados em memória, usada enquanto o Supabase não está configurado.
@@ -79,6 +79,59 @@ export const seedDataSource: DataSource = {
 
     product.available = available;
     return clone(product);
+  },
+
+  async saveProduct(storeId: ID, input: SaveProductInput): Promise<Product> {
+    const duplicate = seedProducts.find(
+      (candidate) =>
+        candidate.storeId === storeId && candidate.slug === input.slug && candidate.id !== input.id,
+    );
+    if (duplicate) throw new Error("Já existe um produto com esse endereço");
+
+    if (input.id) {
+      const product = seedProducts.find(
+        (candidate) => candidate.storeId === storeId && candidate.id === input.id,
+      );
+      if (!product) throw new Error("Produto não encontrado");
+
+      // Os grupos de opção não vêm no formulário: preservá-los é o que
+      // impede uma edição de nome de apagar os adicionais do produto.
+      Object.assign(product, {
+        categoryId: input.categoryId,
+        slug: input.slug,
+        name: input.name,
+        description: input.description,
+        imageUrl: input.imageUrl,
+        priceCents: input.priceCents,
+        promoPriceCents: input.promoPriceCents,
+        available: input.available,
+        featured: input.featured,
+      });
+      return clone(product);
+    }
+
+    const siblings = seedProducts.filter(
+      (candidate) => candidate.storeId === storeId && candidate.categoryId === input.categoryId,
+    );
+
+    const created: Product = {
+      id: `prd_${input.slug}_${Date.now().toString(36)}`,
+      storeId,
+      categoryId: input.categoryId,
+      slug: input.slug,
+      name: input.name,
+      description: input.description,
+      imageUrl: input.imageUrl,
+      priceCents: input.priceCents,
+      promoPriceCents: input.promoPriceCents,
+      available: input.available,
+      featured: input.featured,
+      sortOrder: siblings.length,
+      optionGroups: [],
+    };
+
+    seedProducts.push(created);
+    return clone(created);
   },
 
   async listOrders(storeId: ID, filter: OrderFilter = {}): Promise<Order[]> {

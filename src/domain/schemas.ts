@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { parseToCents } from "./money";
 
 /** Validação compartilhada entre formulário e servidor. Uma regra, um lugar. */
 
@@ -53,3 +54,48 @@ export const checkoutSchema = z
 
 export type CheckoutInput = z.infer<typeof checkoutSchema>;
 export type AddressInput = z.infer<typeof addressSchema>;
+
+/* --------------------------------------------------------------- Produto */
+
+/** Aceita "39,90", "39.90" ou "R$ 39,90" e devolve centavos. */
+const priceField = z
+  .string()
+  .trim()
+  .min(1, "Informe o preço")
+  .transform((value) => parseToCents(value))
+  .refine((cents): cents is number => cents !== null && cents >= 0, {
+    message: "Preço inválido",
+  });
+
+const optionalPriceField = z
+  .string()
+  .trim()
+  .transform((value) => (value === "" ? null : parseToCents(value)))
+  .refine((cents) => cents === null || cents >= 0, { message: "Preço inválido" });
+
+export const productSchema = z
+  .object({
+    id: z.string().optional(),
+    categoryId: z.string().min(1, "Escolha uma categoria"),
+    name: z.string().trim().min(2, "Informe o nome").max(80),
+    slug: z
+      .string()
+      .trim()
+      .min(2, "Informe o endereço")
+      .max(80)
+      .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Use só letras minúsculas, números e hífen"),
+    description: z.string().trim().max(400).nullish(),
+    imageUrl: z.string().trim().max(500).nullish(),
+    priceCents: priceField,
+    promoPriceCents: optionalPriceField,
+    available: z.boolean(),
+    featured: z.boolean(),
+  })
+  // Promoção que não é menor que o preço cheio não é promoção — e o banco
+  // recusa com um check constraint, então é melhor barrar aqui.
+  .refine(
+    (data) => data.promoPriceCents === null || data.promoPriceCents < data.priceCents,
+    { message: "A promoção precisa ser menor que o preço", path: ["promoPriceCents"] },
+  );
+
+export type ProductInput = z.infer<typeof productSchema>;

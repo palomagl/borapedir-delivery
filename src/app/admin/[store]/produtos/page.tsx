@@ -1,8 +1,11 @@
+import { Plus } from "lucide-react";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AvailabilityToggle } from "@/components/admin/availability-toggle";
 import { PageHeader } from "@/components/admin/page-header";
 import { ProductImage } from "@/components/store/product-image";
+import { Button } from "@/components/ui/button";
 import { effectivePriceCents, hasPromo } from "@/domain/catalog";
 import { formatCents } from "@/domain/money";
 import { loadCatalog, loadStore } from "@/server/store-data";
@@ -34,11 +37,19 @@ export default async function AdminProducts({
             ? `${total} itens no cardápio · ${unavailable} esgotado${unavailable === 1 ? "" : "s"}`
             : `${total} itens no cardápio`
         }
+        action={
+          <Button asChild>
+            <Link href={`/admin/${store.slug}/produtos/novo`}>
+              <Plus />
+              Novo produto
+            </Link>
+          </Button>
+        }
       />
 
       <p className="mt-5 rounded-md bg-surface px-4 py-3 text-[0.8125rem] text-ink-muted hairline">
-        O interruptor tira e devolve o item ao cardápio na hora. Criar e editar produto ainda
-        não está nesta tela.
+        O interruptor tira e devolve o item ao cardápio na hora, sem abrir formulário. Toque no
+        nome para editar preço, descrição e categoria.
       </p>
 
       <div className="mt-6 space-y-8">
@@ -61,12 +72,15 @@ export default async function AdminProducts({
                   </span>
 
                   <div className="min-w-0 flex-1">
-                    <p
-                      className={`font-display text-[1.125rem] leading-none ${
-                        product.available ? "text-ink" : "text-ink-muted"
-                      }`}
-                    >
-                      {product.name}
+                    <p className="font-display text-[1.125rem] leading-none">
+                      <Link
+                        href={`/admin/${store.slug}/produtos/${product.id}`}
+                        className={`rounded-xs transition-colors hover:text-[var(--store-brand)] ${
+                          product.available ? "text-ink" : "text-ink-muted"
+                        }`}
+                      >
+                        {product.name}
+                      </Link>
                     </p>
                     {product.description ? (
                       <p className="clamp-1 mt-1.5 text-[0.8125rem] text-ink-muted">
