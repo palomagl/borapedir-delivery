@@ -201,7 +201,8 @@ const brabos: ProductSpec[] = [
   {
     slug: "bbq-na-chapa",
     name: "BBQ na Chapa",
-    description: "Blend de 160 g, cheddar, barbecue defumado da casa, alface e tomate.",
+    description:
+      "Duas carnes de 160 g, cheddar derretido, bacon, alface e barbecue defumado da casa.",
     priceCents: 3490,
     groups: [pontoDaCarne("bbq"), adicionais("bbq")],
   },
@@ -214,9 +215,10 @@ const brabos: ProductSpec[] = [
     groups: [pontoDaCarne("defumado"), adicionais("defumado")],
   },
   {
-    slug: "duplo-rustico",
-    name: "Duplo Rústico",
-    description: "Pão integral com grãos, duas carnes de 160 g, cheddar e tomate. Sem molho pesado.",
+    slug: "salada-da-casa",
+    name: "Salada da Casa",
+    description:
+      "Pão de gergelim, blend de 160 g, cheddar, alface americana, tomate e maionese da casa.",
     priceCents: 3690,
     groups: [pontoDaCarne("rustico"), adicionais("rustico")],
   },
@@ -237,6 +239,8 @@ const combos: ProductSpec[] = [
         max: 1,
         options: [
           ["Clássico Bruto", 0],
+          ["Frango Crocante", 0],
+          ["Salada da Casa", 200],
           ["BBQ na Chapa", 300],
           ["Bruto Bacon", 600],
           ["Smash Duplo", 900],
@@ -269,7 +273,7 @@ const porcoes: ProductSpec[] = [
   {
     slug: "fritas-rusticas",
     name: "Fritas Rústicas",
-    description: "Batata com casca, sal grosso e alecrim. Serve duas pessoas.",
+    description: "Batata crocante com sal e ervas, servida na cesta com molho da casa. Serve duas pessoas.",
     priceCents: 1990,
     groups: [
       {
@@ -359,8 +363,8 @@ const bebidas: ProductSpec[] = [
   },
   {
     slug: "limonada",
-    name: "Limonada de Hortelã",
-    description: "Limão batido com gelo e hortelã, 500 ml. Feita na hora.",
+    name: "Limonada com Alecrim",
+    description: "Limão siciliano, alecrim fresco e muito gelo, 500 ml. Feita na hora.",
     priceCents: 1290,
   },
   {
@@ -417,7 +421,7 @@ const sobremesas: ProductSpec[] = [
   {
     slug: "copao-de-chocolate",
     name: "Copão de Chocolate",
-    description: "Camadas de mousse, brownie e biscoito, com chantilly e ganache.",
+    description: "Mousse de chocolate meio amargo, raspas de chocolate e frutas vermelhas.",
     priceCents: 2490,
   },
   {
@@ -459,22 +463,15 @@ export const seedStore: Store = {
   deliveryEtaMinutes: [35, 50],
   pickupEtaMinutes: [15, 25],
   paymentMethods: ["pix", "credit", "debit", "cash", "meal_voucher"],
-  // Almoço e noite, com a janela da noite virando a madrugada — o padrão real
-  // de hamburgueria, e o caso que quebra qualquer cálculo ingênuo de horário.
+  // Só à noite, com a janela virando a madrugada — o padrão real de
+  // hamburgueria, e o caso que quebra qualquer cálculo ingênuo de horário.
   openingHours: [
-    { weekday: 0, opensAt: "11:30", closesAt: "15:00" },
     { weekday: 0, opensAt: "18:00", closesAt: "02:00" },
-    { weekday: 1, opensAt: "11:30", closesAt: "15:00" },
     { weekday: 1, opensAt: "18:00", closesAt: "02:00" },
-    { weekday: 2, opensAt: "11:30", closesAt: "15:00" },
     { weekday: 2, opensAt: "18:00", closesAt: "02:00" },
-    { weekday: 3, opensAt: "11:30", closesAt: "15:00" },
     { weekday: 3, opensAt: "18:00", closesAt: "02:00" },
-    { weekday: 4, opensAt: "11:30", closesAt: "15:00" },
     { weekday: 4, opensAt: "18:00", closesAt: "02:00" },
-    { weekday: 5, opensAt: "11:30", closesAt: "15:00" },
     { weekday: 5, opensAt: "18:00", closesAt: "03:00" },
-    { weekday: 6, opensAt: "11:30", closesAt: "15:00" },
     { weekday: 6, opensAt: "18:00", closesAt: "03:00" },
   ],
   acceptingOrders: true,
