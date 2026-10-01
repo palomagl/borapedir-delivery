@@ -2,6 +2,7 @@
 
 import {
   ExternalLink,
+  LogOut,
   LayoutGrid,
   ReceiptText,
   Settings,
@@ -11,6 +12,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { signOut } from "@/server/actions/auth";
 import { cn } from "@/lib/utils";
 
 /**
@@ -79,6 +81,16 @@ export function AdminNav({ storeSlug, storeName, awaitingCount }: AdminNavProps)
             <ExternalLink className="size-4" aria-hidden />
             Ver a loja
           </Link>
+
+          <form action={signOut}>
+            <button
+              type="submit"
+              className="flex w-full items-center gap-2.5 rounded-sm px-3 py-2 text-[0.8125rem] font-medium text-ink-muted transition-colors hover:bg-surface-hover hover:text-ink"
+            >
+              <LogOut className="size-4" aria-hidden />
+              Sair
+            </button>
+          </form>
         </div>
       </aside>
 

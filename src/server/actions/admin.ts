@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { productSchema } from "@/domain/schemas";
 import { getDataSource } from "@/server/data";
+import { isAdmin } from "@/server/auth/guard";
 import type { ActionResult } from "@/server/actions/result";
 
 /**
@@ -16,6 +17,8 @@ export async function setProductAvailability(
   productId: string,
   available: boolean,
 ): Promise<ActionResult<{ available: boolean }>> {
+  if (!(await isAdmin())) return { ok: false, error: "Sessão expirada. Entre de novo." };
+
   const source = getDataSource();
 
   const store = await source.getStoreBySlug(storeSlug);
@@ -44,6 +47,8 @@ export async function saveProduct(
   storeSlug: string,
   raw: unknown,
 ): Promise<ActionResult<{ productId: string; slug: string }>> {
+  if (!(await isAdmin())) return { ok: false, error: "Sessão expirada. Entre de novo." };
+
   const parsed = productSchema.safeParse(raw);
   if (!parsed.success) {
     const fieldErrors: Record<string, string> = {};

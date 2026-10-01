@@ -8,6 +8,9 @@ import { checkoutSchema } from "@/domain/schemas";
 import type { Order, OrderItem, OrderStatus, Product } from "@/domain/types";
 import { getDataSource, type NewOrder } from "@/server/data";
 import type { ActionResult } from "@/server/actions/result";
+import { isAdmin } from "@/server/auth/guard";
+import { clientKey } from "@/server/client-key";
+import { rateLimit } from "@/server/rate-limit";
 
 /**
  * Criação de pedido.
@@ -20,6 +23,16 @@ export async function createOrder(
   storeSlug: string,
   raw: unknown,
 ): Promise<ActionResult<{ orderId: string; orderNumber: number }>> {
+  // Dez pedidos por minuto já é mais do que qualquer pessoa real faz, e
+  // corta o roteiro que tentaria encher a cozinha de pedido falso.
+  const limit = rateLimit(`pedido:${await clientKey()}`, 10, 60);
+  if (!limit.allowed) {
+    return {
+      ok: false,
+      error: `Muitas tentativas. Tente de novo em ${limit.retryAfterSeconds} segundos.`,
+    };
+  }
+
   const parsed = checkoutSchema.safeParse(raw);
   if (!parsed.success) {
     const fieldErrors: Record<string, string> = {};
@@ -207,6 +220,10 @@ export async function advanceOrderStatus(
   orderId: string,
   status: OrderStatus,
 ): Promise<ActionResult<Order>> {
+  // Mudar status é operação de loja: exige sessão, mesmo que a chamada
+  // venha direto no endpoint da action em vez de pela tela.
+  if (!(await isAdmin())) return { ok: false, error: "Sessão expirada. Entre de novo." };
+
   const source = getDataSource();
   const current = await source.getOrder(storeId, orderId);
   if (!current) return { ok: false, error: "Pedido não encontrado." };
