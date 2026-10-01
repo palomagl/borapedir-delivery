@@ -26,10 +26,27 @@ export function formatDelta(cents: number): string {
   return `${sign} ${BRL.format(Math.abs(cents) / 100)}`;
 }
 
-/** Converte "39,90" ou "39.90" digitado pelo lojista em 3990. */
+/**
+ * Converte o que o lojista digita em centavos.
+ *
+ * O ponto é ambíguo em português: em "1.299,90" é milhar, em "38.90" é
+ * decimal. A regra: havendo vírgula, ela é o decimal e o ponto é milhar.
+ * Sem vírgula, um ponto seguido de exatamente três dígitos é milhar
+ * ("1.299"); qualquer outro ponto é decimal ("38.90").
+ */
 export function parseToCents(input: string): number | null {
-  const normalized = input.trim().replace(/[^\d,.-]/g, "").replace(/\./g, "").replace(",", ".");
-  if (normalized === "") return null;
+  const cleaned = input.trim().replace(/[^\d,.-]/g, "");
+  if (cleaned === "") return null;
+
+  let normalized: string;
+  if (cleaned.includes(",")) {
+    normalized = cleaned.replace(/\./g, "").replace(",", ".");
+  } else if (/\.\d{3}(?:\D|$)/.test(cleaned)) {
+    normalized = cleaned.replace(/\./g, "");
+  } else {
+    normalized = cleaned;
+  }
+
   const value = Number(normalized);
   if (!Number.isFinite(value)) return null;
   return Math.round(value * 100);
