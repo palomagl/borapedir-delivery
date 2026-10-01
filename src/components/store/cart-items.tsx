@@ -59,8 +59,14 @@ export function CartLineItem({ line, compact = false }: { line: CartLine; compac
           compact ? "size-12" : "size-16",
         )}
       >
+        {/*
+          A foto vem do catálogo, não da linha salva. O carrinho vive no
+          localStorage e sobrevive a deploys: se a imagem do produto mudar de
+          caminho, uma sacola montada ontem não pode ficar com o quadrado
+          vazio. O valor congelado só entra se o produto sumiu do cardápio.
+        */}
         <ProductImage
-          src={line.productImageUrl}
+          src={product?.imageUrl ?? line.productImageUrl}
           alt=""
           sizes={compact ? "48px" : "64px"}
         />
