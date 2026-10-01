@@ -52,7 +52,6 @@ interface ProductSpec {
   description: string;
   priceCents: number;
   promoPriceCents?: number;
-  image: string;
   featured?: boolean;
   available?: boolean;
   groups?: GroupSpec[];
@@ -67,7 +66,9 @@ function buildProduct(categoryId: string, spec: ProductSpec, sortOrder: number):
     slug: spec.slug,
     name: spec.name,
     description: spec.description,
-    imageUrl: `/seed/${spec.image}.jpg`,
+    // O arquivo da foto sempre tem o nome do slug. Um campo a menos para
+    // sair de sincronia quando alguém renomeia um produto.
+    imageUrl: `/seed/${spec.slug}.jpg`,
     priceCents: spec.priceCents,
     promoPriceCents: spec.promoPriceCents ?? null,
     available: spec.available !== false,
@@ -177,7 +178,6 @@ const brabos: ProductSpec[] = [
     name: "Bruto Bacon",
     description: "Blend de 160 g, bacon em tiras crocantes, cheddar inglês, cebola crispy e molho bruto.",
     priceCents: 3890,
-    image: "bacon-supremo",
     featured: true,
     groups: [tamanho("bacon"), pontoDaCarne("bacon"), adicionais("bacon")],
   },
@@ -187,7 +187,6 @@ const brabos: ProductSpec[] = [
     description: "Duas carnes prensadas na chapa, cheddar derretido em duas camadas, picles e maionese defumada.",
     priceCents: 4190,
     promoPriceCents: 3690,
-    image: "duplo-cheddar",
     featured: true,
     groups: [pontoDaCarne("smash"), adicionais("smash")],
   },
@@ -196,7 +195,6 @@ const brabos: ProductSpec[] = [
     name: "Clássico Bruto",
     description: "Pão brioche tostado na manteiga, blend de 160 g, queijo prato, alface, tomate e molho da casa.",
     priceCents: 3290,
-    image: "brasa-classico",
     featured: true,
     groups: [tamanho("classico"), pontoDaCarne("classico"), adicionais("classico")],
   },
@@ -205,7 +203,6 @@ const brabos: ProductSpec[] = [
     name: "BBQ na Chapa",
     description: "Blend de 160 g, cheddar, barbecue defumado da casa, alface e tomate.",
     priceCents: 3490,
-    image: "salada-da-casa",
     groups: [pontoDaCarne("bbq"), adicionais("bbq")],
   },
   {
@@ -213,7 +210,6 @@ const brabos: ProductSpec[] = [
     name: "Defumado",
     description: "Pão de beterraba, blend maturado de 180 g, queijo brie, rúcula e geleia de pimenta.",
     priceCents: 4490,
-    image: "beterraba-defumada",
     featured: true,
     groups: [pontoDaCarne("defumado"), adicionais("defumado")],
   },
@@ -222,7 +218,6 @@ const brabos: ProductSpec[] = [
     name: "Duplo Rústico",
     description: "Pão integral com grãos, duas carnes de 160 g, cheddar e tomate. Sem molho pesado.",
     priceCents: 3690,
-    image: "integral-duplo",
     groups: [pontoDaCarne("rustico"), adicionais("rustico")],
   },
 ];
@@ -233,7 +228,6 @@ const combos: ProductSpec[] = [
     name: "Combo Bruto",
     description: "Um burger à sua escolha, fritas rústicas individuais e bebida de 350 ml.",
     priceCents: 4590,
-    image: "combo-brasa",
     featured: true,
     groups: [
       {
@@ -267,7 +261,6 @@ const combos: ProductSpec[] = [
     name: "Trio de Sliders",
     description: "Três mini burgers de 90 g — clássico, bacon e cheddar — servidos sobre as fritas.",
     priceCents: 5290,
-    image: "trio-sliders",
     groups: [pontoDaCarne("sliders")],
   },
 ];
@@ -278,7 +271,6 @@ const porcoes: ProductSpec[] = [
     name: "Fritas Rústicas",
     description: "Batata com casca, sal grosso e alecrim. Serve duas pessoas.",
     priceCents: 1990,
-    image: "fritas-rusticas",
     groups: [
       {
         id: "grp_fritas_molho",
@@ -300,21 +292,18 @@ const porcoes: ProductSpec[] = [
     name: "Fritas com Parmesão",
     description: "Batata frita finalizada com parmesão ralado na hora, alho confitado e salsa.",
     priceCents: 2690,
-    image: "fritas-parmesao",
   },
   {
     slug: "onion-rings",
     name: "Onion Rings",
     description: "Anéis de cebola empanados na cerveja, crocantes por fora e macios por dentro.",
     priceCents: 2490,
-    image: "onion-rings",
   },
   {
     slug: "picanha-na-tabua",
     name: "Picanha na Tábua",
     description: "Picanha fatiada na chapa, farofa de bacon e pão de alho. Serve três pessoas.",
     priceCents: 8990,
-    image: "picanha-tabua",
   },
 ];
 
@@ -324,7 +313,6 @@ const bebidas: ProductSpec[] = [
     name: "Refrigerante",
     description: "Lata gelada de 350 ml ou garrafa de 600 ml.",
     priceCents: 890,
-    image: "refrigerante",
     groups: [
       {
         id: "grp_refri_sabor",
@@ -352,18 +340,55 @@ const bebidas: ProductSpec[] = [
     ],
   },
   {
+    slug: "agua",
+    name: "Água",
+    description: "Mineral, 500 ml. Gelada.",
+    priceCents: 590,
+    groups: [
+      {
+        id: "grp_agua_tipo",
+        name: "Tipo",
+        min: 1,
+        max: 1,
+        options: [
+          ["Sem gás", 0],
+          ["Com gás", 100],
+        ],
+      },
+    ],
+  },
+  {
     slug: "limonada",
     name: "Limonada de Hortelã",
     description: "Limão batido com gelo e hortelã, 500 ml. Feita na hora.",
     priceCents: 1290,
-    image: "limonada",
+  },
+  {
+    slug: "drink-da-casa",
+    name: "Drink da Casa",
+    description: "Destilado, laranja desidratada e gelo de pedra. Servido no copo baixo.",
+    priceCents: 2690,
+    featured: true,
+    groups: [
+      {
+        id: "grp_drink_base",
+        name: "Escolha a base",
+        min: 1,
+        max: 1,
+        options: [
+          ["Whisky e laranja", 0],
+          ["Gin e tônica", 0],
+          ["Rum e limão", 0],
+          ["Sem álcool", -400],
+        ],
+      },
+    ],
   },
   {
     slug: "milk-shake",
     name: "Milk Shake",
     description: "Sorvete batido com leite, 400 ml, com calda e cobertura crocante.",
     priceCents: 2190,
-    image: "milkshake",
     groups: [
       {
         id: "grp_shake_sabor",
@@ -387,7 +412,6 @@ const sobremesas: ProductSpec[] = [
     name: "Brownie com Sorvete",
     description: "Brownie morno de chocolate meio amargo, sorvete de creme e calda de caramelo salgado.",
     priceCents: 2290,
-    image: "brownie-sorvete",
     featured: true,
   },
   {
@@ -395,14 +419,12 @@ const sobremesas: ProductSpec[] = [
     name: "Copão de Chocolate",
     description: "Camadas de mousse, brownie e biscoito, com chantilly e ganache.",
     priceCents: 2490,
-    image: "copao-chocolate",
   },
   {
     slug: "brownie-duplo",
     name: "Brownie Duplo",
     description: "Dois brownies com gotas de chocolate belga. Vai bem para dividir.",
     priceCents: 1890,
-    image: "brownie-duplo",
     available: false,
   },
 ];
