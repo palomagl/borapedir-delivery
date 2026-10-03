@@ -18,12 +18,37 @@ const bebas = Bebas_Neue({
   display: "swap",
 });
 
+/**
+ * Sem metadataBase, as URLs de imagem saem relativas e nenhum aplicativo de
+ * mensagem consegue montar o preview. Em produção a Vercel expõe o domínio;
+ * em desenvolvimento cai no localhost.
+ */
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
+  ? new URL(process.env.NEXT_PUBLIC_SITE_URL)
+  : process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? new URL(`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`)
+    : new URL("http://localhost:3000");
+
 export const metadata: Metadata = {
+  metadataBase: siteUrl,
   title: {
     default: "BRUTO · Burger & Chapa",
     template: "%s · BRUTO",
   },
   description: "Carne. Chapa. Fogo. Sem desculpas. Peça online no BRUTO.",
+  applicationName: "BRUTO",
+  openGraph: {
+    type: "website",
+    locale: "pt_BR",
+    siteName: "BRUTO",
+    title: "BRUTO · Burger & Chapa",
+    description: "Carne. Chapa. Fogo. Sem desculpas. Peça online no BRUTO.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "BRUTO · Burger & Chapa",
+    description: "Carne. Chapa. Fogo. Sem desculpas. Peça online no BRUTO.",
+  },
 };
 
 export const viewport: Viewport = {
