@@ -1,13 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="BRUTO">
   <!--
-    O bloco vermelho é o que faz a marca ser achada numa fileira de abas:
-    fundo escuro se confunde com meia dúzia de outros favicons escuros.
+    Versão de tamanho pequeno: é esta que aparece na aba, a 16 px.
 
-    O hambúrguer é vazado em carvão, e a "carne" é o próprio vermelho do
-    fundo aparecendo entre as duas formas. Duas peças, nenhum detalhe fino —
-    é o que sobrevive a 16 px.
+    O gergelim e o recorte fino da alface da versão grande viram mancha
+    nesse tamanho, então saem. O que sobra — a letra, a faixa da carne e o
+    corte de baixo — é o que ainda se lê. A faixa vermelha é propositalmente
+    mais grossa aqui do que na versão grande: a 16 px, 3 px viram menos de um.
   -->
-  <rect width="64" height="64" rx="13" fill="#ff4b2b"/>
-  <path d="M13 28a19 14 0 0 1 38 0Z" fill="#0e0e0e"/>
-  <path d="M13 44h38v3a5 5 0 0 1-5 5H18a5 5 0 0 1-5-5Z" fill="#0e0e0e"/>
+  <rect width="64" height="64" rx="13" fill="#0e0e0e"/>
+  <path d="M14 12H36c6.5 0 10.5 4 10.5 9.5 0 4-2 7-5.5 8.5 4.5 1.3 8 5 8 10.5 0 6.5-4.5 11.5-11.5 11.5H14Z" fill="#ede8de"/>
+  <rect x="22" y="25" width="19.5" height="9" rx="2.5" fill="#0e0e0e"/>
+  <rect x="22" y="27" width="20.5" height="5" rx=".6" fill="#ff4b2b"/>
+  <path d="M22 39c1.6-1.8 3.4-.3 4.8.7 1.5 1 2.8-1 4.6-1.5 1.9-.5 2.8 1.6 4.6 1.1 1.4-.4 2.3-1.7 3.6-.8V43a2.5 2.5 0 0 1-2.5 2.5H24.5A2.5 2.5 0 0 1 22 43Z" fill="#0e0e0e"/>
 </svg>
