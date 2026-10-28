@@ -1,5 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="12" fill="#0e0e0e"/>
-  <path d="M18 14h15.5c6.6 0 10.6 3.1 10.6 8.4 0 3.5-1.9 6-5.2 7.1 4.1.9 6.5 3.7 6.5 7.8 0 5.8-4.3 9.2-11.6 9.2H18V14zm13.9 12.6c2.7 0 4.3-1.3 4.3-3.5s-1.6-3.4-4.3-3.4h-6.2v6.9h6.2zm.9 13.3c3 0 4.7-1.4 4.7-3.8s-1.7-3.8-4.7-3.8h-7.1v7.6h7.1z" fill="#ede8de"/>
-  <rect x="34" y="50" width="18" height="4" rx="1" transform="rotate(-18 34 50)" fill="#ff4b2b"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="BRUTO">
+  <!--
+    O bloco vermelho é o que faz a marca ser achada numa fileira de abas:
+    fundo escuro se confunde com meia dúzia de outros favicons escuros.
+
+    O hambúrguer é vazado em carvão, e a "carne" é o próprio vermelho do
+    fundo aparecendo entre as duas formas. Duas peças, nenhum detalhe fino —
+    é o que sobrevive a 16 px.
+  -->
+  <rect width="64" height="64" rx="13" fill="#ff4b2b"/>
+  <path d="M13 28a19 14 0 0 1 38 0Z" fill="#0e0e0e"/>
+  <path d="M13 44h38v3a5 5 0 0 1-5 5H18a5 5 0 0 1-5-5Z" fill="#0e0e0e"/>
 </svg>
