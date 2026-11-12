@@ -19,7 +19,7 @@ export function StoreHero({ store }: { store: Store }) {
           <h1 className="font-display max-w-[12ch] text-[2rem] sm:text-5xl lg:text-[3.75rem]">
             Peça seu<br /><span className="text-[var(--store-brand)]">Bruto agora.</span>
           </h1>
-          <p className="mt-4 max-w-[21rem] text-sm leading-snug text-white sm:text-lg lg:text-xl">
+          <p className="mt-4 max-w-[25rem] text-sm leading-snug text-white sm:text-lg lg:text-xl">
             Hambúrgueres artesanais, combos<br className="hidden sm:block" /> e acompanhamentos.
           </p>
           <Button asChild size="lg" className="group mt-6 h-11 px-6 text-sm lg:h-14 lg:px-9 lg:text-lg">

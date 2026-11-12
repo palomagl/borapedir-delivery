@@ -10,9 +10,10 @@ import type { Product } from "@/domain/types";
 export function FeaturedCard({ product }: { product: Product }) {
   const { open } = useProductModal();
   return (
-    <button type="button" onClick={() => open(product)} className="group relative flex w-full gap-3 overflow-hidden rounded-[22px] border border-line bg-gradient-to-br from-surface to-paper p-3 text-left transition-colors hover:border-[var(--store-brand)] lg:block lg:p-0">
+    <button type="button" onClick={() => open(product)} className="featured-tile group relative flex w-full gap-3 overflow-hidden rounded-[22px] border border-line bg-gradient-to-br from-surface to-paper p-3 text-left transition-colors hover:border-[var(--store-brand)] lg:block lg:p-0">
       <span className="relative block size-24 shrink-0 overflow-hidden rounded-xl bg-paper-sunken lg:aspect-[2/1] lg:h-auto lg:w-full lg:rounded-none">
         <ProductImage src={product.imageUrl} alt={product.name} sizes="(min-width: 1024px) 380px, 96px" className="transition-transform duration-500 group-hover:scale-105" />
+        {hasPromo(product) ? <span className="absolute left-2 top-2 hidden rounded-full lg:inline-flex bg-black/80 px-2 py-1 text-[0.625rem] font-semibold text-[var(--store-brand)]">Oferta da casa</span> : null}
       </span>
       <span className="flex min-w-0 flex-1 flex-col pr-8 lg:px-5 lg:pb-5 lg:pt-3">
         <span className="font-display block text-base lg:text-lg">{product.name}</span>

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Bebas_Neue, Inter } from "next/font/google";
+import { Bebas_Neue, Inter, Poppins } from "next/font/google";
 import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
 
@@ -11,6 +11,13 @@ const inter = Inter({
 });
 
 /** Display: condensada, caixa alta, com a presença que a marca pede. */
+const storeFont = Poppins({
+  variable: "--font-store",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800", "900"],
+  display: "swap",
+});
+
 const bebas = Bebas_Neue({
   variable: "--font-bebas",
   subsets: ["latin"],
@@ -58,7 +65,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR" className={`${inter.variable} ${bebas.variable}`}>
+    <html lang="pt-BR" className={`${inter.variable} ${bebas.variable} ${storeFont.variable}`}>
       <body className="min-h-dvh antialiased">
         {children}
         <Toaster />

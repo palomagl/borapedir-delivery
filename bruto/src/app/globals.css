@@ -216,7 +216,7 @@ body:has(.storefront),
   background: radial-gradient(ellipse at 80% 0%, #24190f55, transparent 45%), #11100f;
 }
 .storefront .font-display {
-  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-store), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   font-weight: 800;
   text-transform: none;
   letter-spacing: -0.045em;
@@ -239,3 +239,14 @@ body:has(.storefront) { --store-brand: #ff8500; --store-brand-contrast: #fff; }
   .storefront .product-tile .product-photo > div { width: 100%; height: 190px; border-radius: 0; }
   .storefront .product-tile .product-add { right: 16px; bottom: 16px; width: 42px; height: 42px; }
 }
+
+body:has(.storefront) { font-family: var(--font-store), var(--font-inter), sans-serif; }
+body:has(.storefront) .font-display { font-family: var(--font-store), var(--font-inter), sans-serif; font-weight: 800; text-transform: none; letter-spacing: -0.045em; }
+.storefront .store-wordmark { font-family: var(--font-store), var(--font-inter), sans-serif; }
+.storefront .product-tile, .featured-tile { transition: border-color 180ms, transform 220ms, box-shadow 220ms; }
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .storefront .product-tile:hover, .featured-tile:hover { transform: translateY(-3px); box-shadow: 0 14px 30px #0005; }
+}
+.storefront .product-tile .product-add { transition: transform 150ms, filter 150ms; }
+.storefront .product-tile .product-add:hover { filter: brightness(1.12); transform: scale(1.06); }
+.storefront .product-tile:focus-within, .featured-tile:focus-visible { outline: 2px solid var(--store-brand); outline-offset: 3px; }

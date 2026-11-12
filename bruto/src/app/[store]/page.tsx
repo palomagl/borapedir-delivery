@@ -1,11 +1,10 @@
-import { Bike, Clock } from "lucide-react";
-import { formatCents } from "@/domain/money";
-import { formatEta } from "@/lib/format";
 import { notFound } from "next/navigation";
 import { CategoryPills } from "@/components/store/category-nav";
 import { FeaturedCard } from "@/components/store/featured-card";
 import { ProductRow } from "@/components/store/product-row";
-import { ServiceModeToggle } from "@/components/store/service-mode-toggle";
+import { StoreDetails } from "@/components/store/store-details";
+import Link from "next/link";
+import { ArrowUpRight, MapPin } from "lucide-react";
 import { StoreHero } from "@/components/store/store-hero";
 import { sectionId } from "@/lib/section-id";
 import { loadCatalog, loadStore } from "@/server/store-data";
@@ -54,10 +53,7 @@ export default async function StorePage({ params }: StorePageProps) {
               </section>
             ) : null}
 
-            <div className="mt-8 flex flex-wrap items-center gap-4 border-y border-line py-4">
-              <div className="w-full max-w-sm"><ServiceModeToggle /></div>
-              <p className="flex items-center gap-2 text-xs text-ink-muted"><Clock aria-hidden className="size-4" />{formatEta(store.deliveryEtaMinutes)}<Bike aria-hidden className="ml-2 size-4" />{store.deliveryFeeCents === 0 ? "Entrega grátis" : formatCents(store.deliveryFeeCents)}</p>
-            </div>
+            <StoreDetails />
             {catalog.map((section, sectionIndex) => (
               <section
                 key={section.category.id}
@@ -89,6 +85,21 @@ export default async function StorePage({ params }: StorePageProps) {
               </section>
             ))}
           </main>
+          <footer className="mb-6 border-t border-line py-10 lg:py-14">
+            <div className="flex flex-col justify-between gap-8 lg:flex-row lg:items-start">
+              <div>
+                <Link href={`/${store.slug}`} className="store-wordmark text-4xl uppercase">{store.name}<span className="text-[var(--store-brand)]">.</span></Link>
+                <p className="mt-3 text-sm text-ink-soft">{store.headline ?? store.tagline}</p>
+                {store.address ? <p className="mt-4 flex max-w-sm items-start gap-2 text-xs leading-relaxed text-ink-muted"><MapPin aria-hidden className="mt-0.5 size-4 shrink-0" />{store.address}</p> : null}
+              </div>
+              <nav aria-label="Mais sobre a casa" className="grid gap-4 text-sm font-medium">
+                <Link className="flex items-center justify-between gap-10 hover:text-[var(--store-brand)]" href={`/${store.slug}/pedidos`}>Acompanhar meu pedido<ArrowUpRight className="size-4" aria-hidden /></Link>
+                <Link className="flex items-center justify-between gap-10 hover:text-[var(--store-brand)]" href={`/${store.slug}/perfil`}>Conheça a casa<ArrowUpRight className="size-4" aria-hidden /></Link>
+                <Link className="flex items-center justify-between gap-10 hover:text-[var(--store-brand)]" href={`/${store.slug}/ofertas`}>Ofertas da casa<ArrowUpRight className="size-4" aria-hidden /></Link>
+              </nav>
+            </div>
+            <p className="mt-8 border-t border-line pt-5 text-xs text-ink-muted">{store.tagline} · Peça direto com a casa.</p>
+          </footer>
 
 
         </div>
