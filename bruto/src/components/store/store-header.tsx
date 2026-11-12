@@ -1,105 +1,44 @@
 "use client";
 
-import { Search, ShoppingBag } from "lucide-react";
+import { MapPin, Menu, Search, ShoppingCart, UserRound } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import * as React from "react";
 import { SearchDialog } from "@/components/store/search-dialog";
 import { useStore } from "@/components/store/store-context";
 import type { Store } from "@/domain/types";
-import { useScrolled } from "@/lib/use-scrolled";
-import { cn } from "@/lib/utils";
 
-/**
- * Barra fina e permanente, escura, quase invisível sobre o hero.
- *
- * Carrega só o que precisa estar sempre ao alcance: a marca, a busca e a
- * sacola. O estado da loja e os prazos ficam na faixa logo abaixo do hero.
- */
 export function StoreHeader({ store }: { store: Store }) {
   const [searchOpen, setSearchOpen] = React.useState(false);
   const { itemCount, products } = useStore();
-  const pathname = usePathname();
-  const scrolled = useScrolled();
-
-  // Só a home tem hero atrás. Nas outras telas a barra é sólida desde o topo.
-  const overHero = pathname === `/${store.slug}` && !scrolled;
-
+  const city = store.address?.split(",").at(-1)?.trim();
   return (
     <>
-      <header
-        className={cn(
-          "sticky top-0 z-30 border-b transition-[background-color,border-color] duration-300",
-          overHero
-            ? "border-transparent bg-transparent"
-            : "border-line bg-paper/85 backdrop-blur-xl",
-        )}
-      >
-        <div className="mx-auto flex h-14 max-w-[88rem] items-center gap-3 px-4 lg:h-16 lg:gap-6 lg:px-8">
-          <Link
-            href={`/${store.slug}`}
-            className="flex min-w-0 items-baseline gap-2.5 rounded-xs"
-            aria-label={`Início do ${store.name}`}
-          >
-            <span className="font-display text-[1.5rem] leading-none text-ink lg:text-[1.75rem]">
-              {store.name}
-            </span>
-            {store.tagline ? (
-              <>
-                <span aria-hidden className="hidden h-3.5 w-px shrink-0 bg-line-strong sm:block" />
-                <span className="eyebrow hidden truncate text-ink-muted sm:block">
-                  {store.tagline}
-                </span>
-              </>
-            ) : null}
-          </Link>
-
-          <button
-            type="button"
-            onClick={() => setSearchOpen(true)}
-            className={cn(
-              "mx-auto hidden h-10 w-full max-w-md items-center gap-2.5 rounded-md",
-              "bg-surface px-4 text-left text-sm text-ink-muted hairline",
-              "transition-colors hover:bg-surface-hover lg:flex",
-            )}
-          >
-            <Search className="size-4 shrink-0" aria-hidden />
-            Buscar no cardápio
-          </button>
-
-          <div className="ml-auto flex items-center gap-1 lg:ml-0">
-            <button
-              type="button"
-              onClick={() => setSearchOpen(true)}
-              aria-label="Buscar no cardápio"
-              className="flex size-10 items-center justify-center rounded-sm text-ink transition-colors hover:bg-surface-hover lg:hidden"
-            >
-              <Search className="size-[1.125rem]" />
-            </button>
-
-            <Link
-              href={`/${store.slug}/sacola`}
-              aria-label={
-                itemCount > 0
-                  ? `Sacola com ${itemCount} ${itemCount === 1 ? "item" : "itens"}`
-                  : "Sacola vazia"
-              }
-              className="relative hidden size-10 items-center justify-center rounded-sm text-ink transition-colors hover:bg-surface-hover lg:flex"
-            >
-              <ShoppingBag className="size-[1.125rem]" />
-              {itemCount > 0 ? (
-                <span
-                  data-price
-                  className="absolute right-0 top-0.5 flex h-[1.125rem] min-w-[1.125rem] items-center justify-center rounded-full bg-[var(--store-brand)] px-1 text-[0.625rem] font-bold text-[var(--store-brand-contrast)]"
-                >
-                  {itemCount}
-                </span>
-              ) : null}
+      <header className="sticky top-0 z-30 border-b border-line bg-paper/95 backdrop-blur-xl">
+        <div className="mx-auto flex h-[4.25rem] max-w-[76rem] items-center gap-4 px-5 lg:h-24 lg:gap-12 lg:px-8">
+          <details className="relative lg:hidden">
+            <summary aria-label="Abrir menu" className="flex size-10 cursor-pointer list-none items-center justify-center rounded-full border border-line [&::-webkit-details-marker]:hidden"><Menu className="size-6" /></summary>
+            <nav aria-label="Menu" className="absolute left-0 top-12 grid w-48 gap-1 rounded-2xl border border-line bg-surface p-3 shadow-lg">
+              <Link className="rounded-lg p-3 hover:bg-surface-hover" href={`/${store.slug}`}>Cardápio</Link>
+              <Link className="rounded-lg p-3 hover:bg-surface-hover" href={`/${store.slug}/pedidos`}>Meus pedidos</Link>
+              <Link className="rounded-lg p-3 hover:bg-surface-hover" href={`/${store.slug}/ofertas`}>Ofertas</Link>
+              <Link className="rounded-lg p-3 hover:bg-surface-hover" href={`/entrar?de=/admin/${store.slug}`}>Entrar</Link>
+            </nav>
+          </details>
+          <Link href={`/${store.slug}`} aria-label={`Início do ${store.name}`} className="store-wordmark uppercase text-[1.9rem] leading-none lg:text-[3rem]">{store.name}<span className="text-[var(--store-brand)]">.</span></Link>
+          {city ? <span className="hidden items-center gap-2 text-base text-ink lg:flex"><MapPin className="size-5" />{city}</span> : null}
+          <div className="ml-auto flex items-center gap-8">
+            <button type="button" onClick={() => setSearchOpen(true)} className="hidden items-center gap-3 text-base hover:text-[var(--store-brand)] lg:flex"><Search className="size-6" />Buscar</button>
+            <Link href={`/entrar?de=/admin/${store.slug}`} className="hidden items-center gap-3 text-base hover:text-[var(--store-brand)] lg:flex"><UserRound className="size-6" />Entrar</Link>
+            <Link href={`/${store.slug}/sacola`} aria-label={`Sacola com ${itemCount} ${itemCount === 1 ? "item" : "itens"}`} className="orange-action relative flex size-11 items-center justify-center rounded-2xl lg:h-14 lg:w-[4.75rem] lg:rounded-[22px]">
+              <ShoppingCart className="size-6 lg:size-7" strokeWidth={1.6} />
+              {itemCount > 0 ? <span className="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full bg-white text-xs font-bold text-black">{itemCount}</span> : null}
             </Link>
           </div>
         </div>
+        <div className="px-5 pb-4 lg:hidden">
+          <button type="button" onClick={() => setSearchOpen(true)} className="flex h-11 w-full items-center gap-3 rounded-full border border-line-strong bg-surface px-4 text-left text-sm text-ink-soft"><Search className="size-5" />Buscar no cardápio...</button>
+        </div>
       </header>
-
       <SearchDialog open={searchOpen} onOpenChange={setSearchOpen} products={products} />
     </>
   );

@@ -44,14 +44,14 @@ export function ProductRow({ product, priority }: { product: Product; priority?:
   return (
     <div
       className={cn(
-        "group relative flex gap-3.5 rounded-lg bg-surface p-3 hairline",
+        "product-tile group relative flex gap-3.5 rounded-lg bg-surface p-3 hairline",
         "transition-[background-color,box-shadow,transform] duration-200 ease-[var(--ease-out-quint)]",
         unavailable
           ? "opacity-50"
           : "hover:bg-surface-hover hover:shadow-md active:scale-[0.995]",
       )}
     >
-      <div className="flex min-w-0 flex-1 flex-col justify-between py-0.5">
+      <div className="product-copy flex min-w-0 flex-1 flex-col justify-between py-0.5">
         <div className="min-w-0">
           <h3 className="font-display text-[1.125rem] leading-none text-ink lg:text-[1.1875rem]">
             {/* O botão cobre a linha inteira: alvo grande sem aninhar botões. */}
@@ -72,7 +72,7 @@ export function ProductRow({ product, priority }: { product: Product; priority?:
           ) : null}
         </div>
 
-        <div className="mt-2.5 flex items-center gap-2">
+        <div className="mt-2.5 flex items-center gap-2 pr-9">
           {unavailable ? (
             <span className="text-[0.8125rem] font-semibold text-ink-muted">Indisponível hoje</span>
           ) : (
@@ -81,7 +81,7 @@ export function ProductRow({ product, priority }: { product: Product; priority?:
         </div>
       </div>
 
-      <div className="relative shrink-0">
+      <div className="product-photo order-first shrink-0 lg:order-none">
         <div
           className={cn(
             "relative size-[5.5rem] overflow-hidden rounded-md bg-paper-sunken sm:size-24",
@@ -115,8 +115,8 @@ export function ProductRow({ product, priority }: { product: Product; priority?:
             onClick={handleQuickAdd}
             aria-label={simple ? `Adicionar ${product.name} à sacola` : `Escolher opções de ${product.name}`}
             className={cn(
-              "absolute -bottom-1.5 -right-1.5 z-10 flex size-8 items-center justify-center rounded-full",
-              "bg-paper/90 text-ink shadow-md ring-1 ring-line-strong backdrop-blur-sm",
+              "product-add orange-action absolute bottom-3 right-3 z-10 flex size-8 items-center justify-center rounded-xl",
+              "text-white shadow-md",
               "transition-[background-color,color,transform] duration-150",
               "hover:bg-[var(--store-brand)] hover:text-[var(--store-brand-contrast)] hover:ring-transparent",
               "active:scale-90",

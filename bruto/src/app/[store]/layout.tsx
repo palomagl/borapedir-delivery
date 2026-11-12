@@ -41,11 +41,11 @@ export default async function StoreLayout({ children, params }: StoreLayoutProps
           foco e destaque abaixo daqui herda a cor do estabelecimento.
         */}
         <div
-          className="min-h-dvh"
+          className="storefront min-h-dvh"
           style={
             {
-              "--store-brand": store.theme.brand,
-              "--store-brand-contrast": store.theme.brandContrast,
+              "--store-brand": store.slug === "bruto" ? "#ff8500" : store.theme.brand,
+              "--store-brand-contrast": store.slug === "bruto" ? "#ffffff" : store.theme.brandContrast,
             } as React.CSSProperties
           }
         >
