@@ -1,34 +1,32 @@
 # Bora Pedir
 
-Plataforma de lojas digitais de pedido. Cada estabelecimento vive numa pasta
-própria, com sua identidade visual, seu cardápio e seu painel de operação.
+Projetos independentes de lojas de pedidos. Cada pasta tem sua marca, catálogo e aplicação Next.js.
 
-## Projetos
-
-| Pasta | Projeto | Estado |
+| Pasta | Projeto | Experiência |
 | --- | --- | --- |
-| [`bruto/`](bruto) | **BRUTO — Burger & Chapa** | Loja, checkout, pedidos e administração |
+| [bruto-hamburgueria/](bruto-hamburgueria) | **BRUTO — Burger & Chapa** | Hamburgueria: cardápio, personalização, sacola e operação |
+| [roxo-açai/](roxo-a%C3%A7ai) | **ROXO — Açaí do seu jeito** | Copos e combos personalizáveis, barca, felicidade, extras e retirada |
 
-## Rodando um projeto
+## Rodar
 
 ```bash
-cd bruto
-npm install
+cd bruto-hamburgueria
+npm ci
 npm run dev
 ```
 
-Cada pasta é uma aplicação Next.js independente, com seu próprio
-`package.json`. No deploy, aponte o diretório raiz do projeto para a pasta
-correspondente.
+```bash
+cd roxo-açai
+npm ci
+npm run dev
+# http://localhost:3001/roxo
+```
 
-## Sobre a estrutura
+Cada projeto tem dependências, configuração, banco e hospedagem próprios. As características e limites do ROXO demonstrativo estão em seu README.
 
-A base do BRUTO já é multi-loja por dentro: toda tabela carrega `store_id`, o
-tema entra por variável CSS e as rotas são por loja. Um segundo
-estabelecimento do mesmo ramo cabe na mesma aplicação, como `/acai` ao lado de
-`/bruto`.
+## Hospedagem
 
-Pasta separada faz sentido quando o projeto pede identidade e experiência
-próprias, não só outra paleta. Quando o segundo chegar, o caminho é extrair o
-núcleo compartilhado — domínio, componentes e acesso a dados — em vez de
-duplicar o código.
+- BRUTO: pasta principal `bruto-hamburgueria`. O caminho `bruto` contém somente a entrada técnica de compatibilidade da hospedagem já configurada. O build usa o código de `bruto-hamburgueria`; não edite o projeto pela pasta técnica. Em uma nova configuração, selecione `bruto-hamburgueria` como Root Directory.
+- ROXO: criar projeto separado de hospedagem com Root Directory `roxo-açai`.
+
+A organização por pastas identifica o estabelecimento; ela não altera suas rotas públicas nem mistura os dados das lojas.

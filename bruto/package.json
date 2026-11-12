@@ -3,12 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "node prepare.cjs && next dev",
+    "build": "node prepare.cjs && next build",
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "postinstall": "node prepare.cjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
