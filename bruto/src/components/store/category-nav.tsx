@@ -57,11 +57,16 @@ export function CategoryPills({ categories }: { categories: Category[] }) {
   React.useEffect(() => {
     if (!active) return;
     const pill = listRef.current?.querySelector<HTMLElement>(`[data-target="${active}"]`);
-    pill?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+    const list = listRef.current;
+    if (!pill || !list) return;
+    list.scrollTo({
+      left: pill.offsetLeft - list.offsetLeft - (list.clientWidth - pill.clientWidth) / 2,
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
+    });
   }, [active]);
 
   return (
-    <div className="sticky top-[7.5rem] z-20 -mx-4 border-b border-line bg-paper/95 px-4 backdrop-blur-xl lg:top-24">
+    <nav aria-label="Categorias do cardápio" className="sticky top-[7.5rem] z-20 -mx-4 border-b border-line bg-paper/95 px-4 backdrop-blur-xl lg:top-24">
       <ul ref={listRef} className="scroll-x flex gap-2 py-3 lg:gap-4 lg:py-4">
         {categories.map((category, index) => {
           const Icon = [Sandwich, Popcorn, Popcorn, CupSoda, IceCreamBowl][index % 5];
@@ -70,17 +75,17 @@ export function CategoryPills({ categories }: { categories: Category[] }) {
           const isActive = active === id;
 
           return (
-            <li key={category.id} className="min-w-[5.25rem] shrink-0 flex-1 lg:flex-none">
+            <li key={category.id} className="min-w-0 flex-[0_0_calc((100%-1.5rem)/4)] lg:flex-none">
               <button
                 type="button"
                 data-target={id}
                 onClick={() => scrollToSection(id)}
                 aria-current={isActive ? "true" : undefined}
                 className={cn(
-                  "flex min-h-[4.5rem] w-full flex-col items-center justify-center gap-2 rounded-2xl border border-line px-2 py-3 text-[0.625rem] font-semibold transition-colors sm:text-xs lg:min-h-14 lg:flex-row lg:gap-3 lg:rounded-full lg:px-7 lg:py-3 lg:text-sm",
+                  "flex min-h-[4.5rem] w-full flex-col items-center justify-center gap-2 rounded-2xl border border-line px-1 py-3 text-[clamp(0.5rem,2.2vw,0.625rem)] font-semibold transition-colors sm:px-3 sm:text-xs lg:min-h-14 lg:flex-row lg:gap-3 lg:rounded-full lg:px-7 lg:py-3 lg:text-sm",
                   isActive
                     ? "orange-action border-transparent text-white"
-                    : "bg-surface text-ink-soft hairline hover:bg-surface-hover",
+                    : "bg-gradient-to-b from-surface to-paper text-ink-soft shadow-xs hover:bg-surface-hover",
                 )}
               >
                 <Icon aria-hidden className="size-6 shrink-0" strokeWidth={1.5} />
@@ -90,7 +95,7 @@ export function CategoryPills({ categories }: { categories: Category[] }) {
           );
         })}
       </ul>
-    </div>
+    </nav>
   );
 }
 
