@@ -1,5 +1,6 @@
 "use client";
 
+import { Plus } from "lucide-react";
 import { ProductImage } from "@/components/store/product-image";
 import { useProductModal } from "@/components/store/product-modal";
 import { effectivePriceCents, hasPromo } from "@/domain/catalog";
@@ -17,13 +18,13 @@ export function FeaturedCard({ product }: { product: Product }) {
     <button
       type="button"
       onClick={() => open(product)}
-      className="group w-[15rem] shrink-0 snap-start text-left lg:w-[20rem]"
+      className="group relative w-[15rem] shrink-0 snap-start overflow-hidden rounded-lg border border-line bg-surface text-left transition-colors hover:border-line-strong lg:w-full lg:min-w-0"
     >
-      <span className="relative block aspect-[4/3] overflow-hidden rounded-lg bg-paper-sunken shadow-sm">
+      <span className="relative block aspect-[4/3] overflow-hidden bg-paper-sunken">
         <ProductImage
           src={product.imageUrl}
           alt={product.name}
-          sizes="(min-width: 1024px) 320px, 240px"
+          sizes="(min-width: 1408px) 253px, (min-width: 1280px) calc((100vw - 640px) / 3), (min-width: 1024px) calc((100vw - 576px) / 3), 240px"
           className="transition-transform duration-500 ease-[var(--ease-out-quint)] group-hover:scale-[1.05]"
         />
         {hasPromo(product) ? (
@@ -36,11 +37,11 @@ export function FeaturedCard({ product }: { product: Product }) {
         ) : null}
       </span>
 
-      <span className="mt-2.5 block px-0.5">
-        <span className="block truncate font-display text-[1.125rem] leading-none text-ink">
+      <span className="block px-3 pb-4 pt-3">
+        <span className="clamp-2 block min-h-9 font-display text-[1.125rem] leading-none text-ink">
           {product.name}
         </span>
-        <span className="mt-1.5 flex items-baseline gap-2">
+        <span className="mt-1.5 flex flex-wrap items-baseline gap-x-2 gap-y-1 pr-8">
           <span data-price className="text-[0.9375rem] font-bold text-ink">
             {formatCents(effectivePriceCents(product))}
           </span>
@@ -51,6 +52,7 @@ export function FeaturedCard({ product }: { product: Product }) {
           ) : null}
         </span>
       </span>
+      <span aria-hidden className="absolute bottom-3 right-3 flex size-7 items-center justify-center rounded-md bg-[var(--store-brand)] text-[var(--store-brand-contrast)]"><Plus className="size-4" /></span>
     </button>
   );
 }

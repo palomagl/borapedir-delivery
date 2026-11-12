@@ -22,7 +22,7 @@ export default async function StorePage({ params }: StorePageProps) {
   const featured = catalog
     .flatMap((section) => section.products)
     .filter((product) => product.featured && product.available)
-    .slice(0, 8);
+    .slice(0, 3);
 
   return (
     <>
@@ -40,7 +40,7 @@ export default async function StorePage({ params }: StorePageProps) {
           Três colunas no desktop: navegação, cardápio e sacola. No tablet o
           cardápio ocupa a largura toda em duas colunas; no celular, uma.
         */}
-        <div className="lg:grid lg:grid-cols-[11rem_minmax(0,1fr)_20rem] lg:gap-8 xl:grid-cols-[12rem_minmax(0,1fr)_22rem] xl:gap-10">
+        <div className="lg:grid lg:grid-cols-[9rem_minmax(0,1fr)_20rem] lg:gap-6 xl:grid-cols-[10rem_minmax(0,1fr)_22rem] xl:gap-8">
           <div className="lg:pt-2">
             <CategoryRail categories={categories} />
           </div>
@@ -52,7 +52,7 @@ export default async function StorePage({ params }: StorePageProps) {
                   Mais pedidos
                 </h2>
                 {/* Sangra até a borda no celular para a faixa parecer contínua. */}
-                <div className="scroll-x -mx-4 mt-3.5 flex snap-x snap-mandatory gap-3 px-4 pb-1 lg:mx-0 lg:px-0">
+                <div className="scroll-x -mx-4 mt-3.5 flex snap-x snap-mandatory gap-3 px-4 pb-1 lg:mx-0 lg:grid lg:grid-cols-3 lg:overflow-visible lg:px-0">
                   {featured.map((product) => (
                     <FeaturedCard key={product.id} product={product} />
                   ))}
@@ -84,7 +84,7 @@ export default async function StorePage({ params }: StorePageProps) {
                   duas frases de descrição. Antes disso, uma coluna larga
                   informa mais do que duas espremidas.
                 */}
-                <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2 2xl:gap-3">
+                <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-1 lg:gap-3">
                   {section.products.map((product, index) => (
                     <ProductRow
                       key={product.id}

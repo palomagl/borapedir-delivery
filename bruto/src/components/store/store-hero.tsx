@@ -1,4 +1,4 @@
-import { ArrowRight, Bike, Clock, MapPin, Wallet } from "lucide-react";
+import { ArrowRight, Wallet } from "lucide-react";
 import { HeroMedia } from "@/components/store/hero-media";
 import { ServiceModeToggle } from "@/components/store/service-mode-toggle";
 import { Wordmark } from "@/components/store/wordmark";
@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { isStoreOpen, nextOpeningLabel } from "@/domain/catalog";
 import { formatCents } from "@/domain/money";
 import type { Store } from "@/domain/types";
-import { formatEta } from "@/lib/format";
 
 /**
  * A entrada da loja.
@@ -81,24 +80,12 @@ export function StoreHero({ store }: { store: Store }) {
 
       {/* Faixa operacional: as respostas que decidem o pedido, sem enfeite. */}
       <div className="border-b border-line bg-surface">
-        <dl className="scroll-x mx-auto flex max-w-[88rem] items-center gap-x-7 gap-y-2 px-4 py-3.5 lg:px-8">
-          <MetaItem icon={Clock} label="Tempo de entrega">
-            {formatEta(store.deliveryEtaMinutes)}
-          </MetaItem>
-          <MetaItem icon={Bike} label="Taxa de entrega">
-            {store.deliveryFeeCents === 0 ? "Entrega grátis" : formatCents(store.deliveryFeeCents)}
-          </MetaItem>
+        <div className="mx-auto flex max-w-[88rem] flex-wrap items-center gap-x-6 gap-y-3 px-4 py-3.5 lg:px-8">
+          <div className="w-full max-w-lg"><ServiceModeToggle /></div>
           {store.minOrderCents > 0 ? (
-            <MetaItem icon={Wallet} label="Pedido mínimo">
-              mín. {formatCents(store.minOrderCents)}
-            </MetaItem>
+            <dl><MetaItem icon={Wallet} label="Pedido mínimo">mín. {formatCents(store.minOrderCents)}</MetaItem></dl>
           ) : null}
-          {store.address ? (
-            <MetaItem icon={MapPin} label="Endereço" className="hidden xl:flex">
-              {store.address}
-            </MetaItem>
-          ) : null}
-        </dl>
+        </div>
       </div>
 
       {nextOpening ? (
@@ -109,11 +96,6 @@ export function StoreHero({ store }: { store: Store }) {
         </p>
       ) : null}
 
-      <div className="mx-auto max-w-[88rem] px-4 pt-4 lg:px-8 lg:pt-6">
-        <div className="lg:max-w-lg">
-          <ServiceModeToggle />
-        </div>
-      </div>
     </section>
   );
 }
