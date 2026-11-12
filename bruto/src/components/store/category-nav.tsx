@@ -1,5 +1,6 @@
 "use client";
 
+import { CupSoda, IceCreamBowl, Popcorn, Sandwich } from "lucide-react";
 import * as React from "react";
 import type { Category } from "@/domain/types";
 import { sectionId } from "@/lib/section-id";
@@ -26,7 +27,7 @@ function useActiveSection(ids: string[]): string | null {
 
         if (visible[0]) setActive(visible[0].target.id);
       },
-      { rootMargin: "-140px 0px -55% 0px", threshold: 0 },
+      { rootMargin: "-215px 0px -35% 0px", threshold: 0 },
     );
 
     for (const id of ids) {
@@ -60,27 +61,30 @@ export function CategoryPills({ categories }: { categories: Category[] }) {
   }, [active]);
 
   return (
-    <div className="sticky top-14 z-20 -mx-4 mt-5 border-b border-line bg-paper/92 px-4 backdrop-blur-xl lg:hidden">
-      <ul ref={listRef} className="scroll-x flex gap-2 py-2.5">
-        {categories.map((category) => {
+    <div className="sticky top-[7.5rem] z-20 -mx-4 border-b border-line bg-paper/95 px-4 backdrop-blur-xl lg:top-24">
+      <ul ref={listRef} className="scroll-x flex gap-2 py-3 lg:gap-4 lg:py-4">
+        {categories.map((category, index) => {
+          const Icon = [Sandwich, Popcorn, Popcorn, CupSoda, IceCreamBowl][index % 5];
+          const label = { "os-brabos": "Hambúrgueres", "pra-dividir": "Acompanhamentos", "pra-beber": "Bebidas" }[category.slug] ?? category.name;
           const id = sectionId(category);
           const isActive = active === id;
 
           return (
-            <li key={category.id}>
+            <li key={category.id} className="min-w-[5.25rem] shrink-0 flex-1 lg:flex-none">
               <button
                 type="button"
                 data-target={id}
                 onClick={() => scrollToSection(id)}
                 aria-current={isActive ? "true" : undefined}
                 className={cn(
-                  "whitespace-nowrap rounded-full px-3.5 py-2 text-[0.8125rem] font-semibold transition-colors",
+                  "flex min-h-[4.5rem] w-full flex-col items-center justify-center gap-2 rounded-2xl border border-line px-2 py-3 text-[0.625rem] font-semibold transition-colors sm:text-xs lg:min-h-14 lg:flex-row lg:gap-3 lg:rounded-full lg:px-7 lg:py-3 lg:text-sm",
                   isActive
-                    ? "bg-ink text-paper"
+                    ? "orange-action border-transparent text-white"
                     : "bg-surface text-ink-soft hairline hover:bg-surface-hover",
                 )}
               >
-                {category.name}
+                <Icon aria-hidden className="size-6 shrink-0" strokeWidth={1.5} />
+                <span className="text-center leading-tight lg:whitespace-nowrap">{label === "Acompanhamentos" ? <><span className="lg:hidden">Acomp.</span><span className="hidden lg:inline">{label}</span></> : label}</span>
               </button>
             </li>
           );

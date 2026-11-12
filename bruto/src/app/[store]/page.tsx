@@ -1,8 +1,11 @@
+import { Bike, Clock } from "lucide-react";
+import { formatCents } from "@/domain/money";
+import { formatEta } from "@/lib/format";
 import { notFound } from "next/navigation";
-import { CartPanel } from "@/components/store/cart-items";
-import { CategoryPills, CategoryRail } from "@/components/store/category-nav";
+import { CategoryPills } from "@/components/store/category-nav";
 import { FeaturedCard } from "@/components/store/featured-card";
 import { ProductRow } from "@/components/store/product-row";
+import { ServiceModeToggle } from "@/components/store/service-mode-toggle";
 import { StoreHero } from "@/components/store/store-hero";
 import { sectionId } from "@/lib/section-id";
 import { loadCatalog, loadStore } from "@/server/store-data";
@@ -22,13 +25,13 @@ export default async function StorePage({ params }: StorePageProps) {
   const featured = catalog
     .flatMap((section) => section.products)
     .filter((product) => product.featured && product.available)
-    .slice(0, 8);
+    .slice(0, 3);
 
   return (
     <>
       <StoreHero store={store} />
 
-      <div id="cardapio" className="mx-auto max-w-[88rem] scroll-mt-16 px-4 lg:px-8">
+      <div id="cardapio" className="mx-auto max-w-[76rem] scroll-mt-36 px-4 lg:px-8">
         {/*
           As pílulas ficam soltas aqui de propósito: um `sticky` só gruda
           dentro do próprio pai, e um invólucro da altura dela mesma faria a
@@ -36,23 +39,14 @@ export default async function StorePage({ params }: StorePageProps) {
         */}
         <CategoryPills categories={categories} />
 
-        {/*
-          Três colunas no desktop: navegação, cardápio e sacola. No tablet o
-          cardápio ocupa a largura toda em duas colunas; no celular, uma.
-        */}
-        <div className="lg:grid lg:grid-cols-[11rem_minmax(0,1fr)_20rem] lg:gap-8 xl:grid-cols-[12rem_minmax(0,1fr)_22rem] xl:gap-10">
-          <div className="lg:pt-2">
-            <CategoryRail categories={categories} />
-          </div>
-
+        <div>
           <main className="pb-10 lg:pb-16">
             {featured.length > 0 ? (
               <section className="pt-6 lg:pt-2" aria-labelledby="destaques">
                 <h2 id="destaques" className="font-display text-[1.75rem] text-ink lg:text-[2rem]">
-                  Mais pedidos
+                  Destaques da casa
                 </h2>
-                {/* Sangra até a borda no celular para a faixa parecer contínua. */}
-                <div className="scroll-x -mx-4 mt-3.5 flex snap-x snap-mandatory gap-3 px-4 pb-1 lg:mx-0 lg:px-0">
+                <div className="mt-5 grid gap-3 lg:grid-cols-3 lg:gap-5">
                   {featured.map((product) => (
                     <FeaturedCard key={product.id} product={product} />
                   ))}
@@ -60,17 +54,21 @@ export default async function StorePage({ params }: StorePageProps) {
               </section>
             ) : null}
 
+            <div className="mt-8 flex flex-wrap items-center gap-4 border-y border-line py-4">
+              <div className="w-full max-w-sm"><ServiceModeToggle /></div>
+              <p className="flex items-center gap-2 text-xs text-ink-muted"><Clock aria-hidden className="size-4" />{formatEta(store.deliveryEtaMinutes)}<Bike aria-hidden className="ml-2 size-4" />{store.deliveryFeeCents === 0 ? "Entrega grátis" : formatCents(store.deliveryFeeCents)}</p>
+            </div>
             {catalog.map((section, sectionIndex) => (
               <section
                 key={section.category.id}
                 id={sectionId(section.category)}
                 aria-labelledby={`${sectionId(section.category)}-titulo`}
-                className="scroll-mt-28 pt-9 lg:scroll-mt-24 lg:pt-10"
+                className="scroll-mt-56 pt-9 lg:scroll-mt-48 lg:pt-10"
               >
                 <div className="mb-4 flex flex-wrap items-baseline gap-x-4 gap-y-1">
                   <h2
                     id={`${sectionId(section.category)}-titulo`}
-                    className="font-display text-[2rem] text-ink lg:text-[2.5rem]"
+                    className="font-display text-[1.5rem] text-ink lg:text-[2rem]"
                   >
                     {section.category.name}
                   </h2>
@@ -79,12 +77,7 @@ export default async function StorePage({ params }: StorePageProps) {
                   ) : null}
                 </div>
 
-                {/*
-                  Duas colunas só quando cada linha ainda tem largura para
-                  duas frases de descrição. Antes disso, uma coluna larga
-                  informa mais do que duas espremidas.
-                */}
-                <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2 2xl:gap-3">
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
                   {section.products.map((product, index) => (
                     <ProductRow
                       key={product.id}
@@ -97,9 +90,7 @@ export default async function StorePage({ params }: StorePageProps) {
             ))}
           </main>
 
-          <div className="lg:pt-2">
-            <CartPanel />
-          </div>
+
         </div>
       </div>
     </>
