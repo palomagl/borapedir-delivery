@@ -125,6 +125,7 @@ export function CheckoutForm() {
   }
 
   async function onSubmit(values: FormValues) {
+    if (step !== "revisao") return;
     setSubmitting(true);
 
     const result = await createOrder(store.slug, {
@@ -442,7 +443,7 @@ export function CheckoutForm() {
         ) : null}
 
         {step === "revisao" ? (
-          <Button type="submit" size="lg" className="flex-1" loading={submitting} disabled={!isOpen}>
+          <Button key="confirm-order" type="submit" size="lg" className="flex-1" loading={submitting} disabled={!isOpen}>
             <Check />
             <span>Confirmar pedido</span>
             <span aria-hidden className="opacity-50">
@@ -451,7 +452,7 @@ export function CheckoutForm() {
             <span data-price>{formatCents(totals.totalCents)}</span>
           </Button>
         ) : (
-          <Button type="button" size="lg" className="flex-1" onClick={goNext}>
+          <Button key="next-step" type="button" size="lg" className="flex-1" onClick={(event) => { event.preventDefault(); void goNext(); }}>
             Continuar
           </Button>
         )}
