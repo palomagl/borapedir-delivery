@@ -44,16 +44,16 @@ export function ProductRow({ product, priority }: { product: Product; priority?:
   return (
     <div
       className={cn(
-        "product-tile group relative flex gap-3.5 rounded-lg bg-surface p-3 hairline",
+        "catalog-product group relative flex gap-3 rounded-[22px] border border-line bg-gradient-to-br from-surface to-paper p-3 lg:gap-4 lg:p-4",
         "transition-[background-color,box-shadow,transform] duration-200 ease-[var(--ease-out-quint)]",
         unavailable
           ? "opacity-50"
           : "hover:bg-surface-hover hover:shadow-md active:scale-[0.995]",
       )}
     >
-      <div className="product-copy flex min-w-0 flex-1 flex-col justify-between py-0.5">
+      <div className="flex min-w-0 flex-1 flex-col justify-between py-0.5">
         <div className="min-w-0">
-          <h3 className="font-display text-[1.125rem] leading-none text-ink lg:text-[1.1875rem]">
+          <h3 className="font-bold text-sm leading-snug tracking-tight text-ink lg:text-lg">
             {/* O botão cobre a linha inteira: alvo grande sem aninhar botões. */}
             <button
               type="button"
@@ -66,13 +66,13 @@ export function ProductRow({ product, priority }: { product: Product; priority?:
           </h3>
 
           {product.description ? (
-            <p className="clamp-2 mt-1.5 text-[0.8125rem] leading-[1.45] text-ink-muted">
+            <p className="clamp-2 mt-1.5 text-[0.8125rem] leading-[1.45] text-ink-muted lg:text-sm">
               {product.description}
             </p>
           ) : null}
         </div>
 
-        <div className="mt-2.5 flex items-center gap-2 pr-9">
+        <div className="mt-2.5 flex items-center gap-2 pr-10">
           {unavailable ? (
             <span className="text-[0.8125rem] font-semibold text-ink-muted">Indisponível hoje</span>
           ) : (
@@ -81,10 +81,10 @@ export function ProductRow({ product, priority }: { product: Product; priority?:
         </div>
       </div>
 
-      <div className="product-photo order-first shrink-0 lg:order-none">
+      <div className="order-first shrink-0">
         <div
           className={cn(
-            "relative size-[5.5rem] overflow-hidden rounded-md bg-paper-sunken sm:size-24",
+            "relative size-[5.5rem] overflow-hidden rounded-md bg-paper-sunken sm:size-24 lg:size-28",
             !unavailable && "transition-transform duration-300 ease-[var(--ease-out-quint)]",
           )}
         >
@@ -92,7 +92,7 @@ export function ProductRow({ product, priority }: { product: Product; priority?:
             src={product.imageUrl}
             alt={product.name}
             priority={priority}
-            sizes="(min-width: 640px) 96px, 88px"
+            sizes="(min-width: 1024px) 112px, (min-width: 640px) 96px, 88px"
             className={cn(
               "transition-transform duration-500 ease-[var(--ease-out-quint)]",
               !unavailable && "group-hover:scale-[1.06]",
@@ -115,10 +115,10 @@ export function ProductRow({ product, priority }: { product: Product; priority?:
             onClick={handleQuickAdd}
             aria-label={simple ? `Adicionar ${product.name} à sacola` : `Escolher opções de ${product.name}`}
             className={cn(
-              "product-add orange-action absolute bottom-3 right-3 z-10 flex size-8 items-center justify-center rounded-xl",
-              "text-white shadow-md",
+              "absolute bottom-3 right-3 z-10 flex size-8 items-center justify-center rounded-xl lg:bottom-4 lg:right-4 lg:size-10",
+              "border border-orange-400/50 bg-gradient-to-br from-orange-400 via-orange-500 to-orange-600 text-white shadow-md",
               "transition-[background-color,color,transform] duration-150",
-              "hover:bg-[var(--store-brand)] hover:text-[var(--store-brand-contrast)] hover:ring-transparent",
+              "hover:brightness-110",
               "active:scale-90",
             )}
           >

@@ -22,7 +22,7 @@ export function PriceTag({
 
   const priceSize = {
     sm: "text-[0.9375rem]",
-    md: "text-base",
+    md: "text-base lg:text-lg",
     lg: "text-[1.375rem]",
   }[size];
 

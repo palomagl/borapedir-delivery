@@ -19,23 +19,30 @@ function useActiveSection(ids: string[]): string | null {
   React.useEffect(() => {
     if (ids.length === 0) return;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-
-        if (visible[0]) setActive(visible[0].target.id);
-      },
-      { rootMargin: "-215px 0px -35% 0px", threshold: 0 },
-    );
-
-    for (const id of ids) {
-      const element = document.getElementById(id);
-      if (element) observer.observe(element);
+    let frame = 0;
+    function update() {
+      const mobile = window.matchMedia("(max-width: 1023px)").matches;
+      const nav = document.querySelector<HTMLElement>('[aria-label="Categorias do cardápio"]');
+      const threshold = mobile ? 56 + (nav?.offsetHeight ?? 92) + 24 : 128;
+      let current = ids[0];
+      for (const id of ids) {
+        const section = document.getElementById(id);
+        if (section && section.getBoundingClientRect().top <= threshold) current = id;
+      }
+      setActive(current);
     }
-
-    return () => observer.disconnect();
+    function onScroll() {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(update);
+    }
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, [ids]);
 
   return active;
@@ -44,7 +51,13 @@ function useActiveSection(ids: string[]): string | null {
 function scrollToSection(id: string) {
   const element = document.getElementById(id);
   if (!element) return;
-  element.scrollIntoView({ behavior: "smooth", block: "start" });
+  const mobile = window.matchMedia("(max-width: 1023px)").matches;
+  const categoryNav = document.querySelector<HTMLElement>('[aria-label="Categorias do cardápio"]');
+  const offset = mobile ? 56 + (categoryNav?.offsetHeight ?? 92) + 12 : 112;
+  window.scrollTo({
+    top: element.getBoundingClientRect().top + window.scrollY - offset,
+    behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
+  });
 }
 
 /** Faixa horizontal fixa — composição de celular e tablet. */
@@ -66,30 +79,36 @@ export function CategoryPills({ categories }: { categories: Category[] }) {
   }, [active]);
 
   return (
-    <nav aria-label="Categorias do cardápio" className="sticky top-[7.5rem] z-20 -mx-4 border-b border-line bg-paper/95 px-4 backdrop-blur-xl lg:top-24">
-      <ul ref={listRef} className="scroll-x flex gap-2 py-3 lg:gap-4 lg:py-4">
-        {categories.map((category, index) => {
-          const Icon = [Sandwich, Popcorn, Popcorn, CupSoda, IceCreamBowl][index % 5];
-          const label = { "os-brabos": "Hambúrgueres", "pra-dividir": "Acompanhamentos", "pra-beber": "Bebidas" }[category.slug] ?? category.name;
+    <nav aria-label="Categorias do cardápio" className="sticky top-14 z-20 -mx-4 mt-5 border-b border-line bg-paper/92 px-4 backdrop-blur-xl lg:hidden">
+      <ul ref={listRef} className="scroll-x flex gap-2 py-3">
+        {categories.map((category) => {
+          const presentation = {
+            "os-brabos": { icon: Sandwich, label: "Hambúrgueres" },
+            combos: { icon: Popcorn, label: "Combos" },
+            "pra-dividir": { icon: Popcorn, label: "Acomp." },
+            "pra-beber": { icon: CupSoda, label: "Bebidas" },
+            "doce-final": { icon: IceCreamBowl, label: category.name },
+          }[category.slug];
+          const Icon = presentation?.icon ?? Sandwich;
           const id = sectionId(category);
           const isActive = active === id;
 
           return (
-            <li key={category.id} className="min-w-0 flex-[0_0_calc((100%-1.5rem)/4)] lg:flex-none">
+            <li key={category.id} className="min-w-0 flex-[0_0_calc((100%-1.5rem)/4)]">
               <button
                 type="button"
                 data-target={id}
                 onClick={() => scrollToSection(id)}
                 aria-current={isActive ? "true" : undefined}
                 className={cn(
-                  "flex min-h-[4.5rem] w-full flex-col items-center justify-center gap-2 rounded-2xl border border-line px-1 py-3 text-[clamp(0.5rem,2.2vw,0.625rem)] font-semibold transition-colors sm:px-3 sm:text-xs lg:min-h-14 lg:flex-row lg:gap-3 lg:rounded-full lg:px-7 lg:py-3 lg:text-sm",
+                  "flex min-h-[4.5rem] w-full flex-col items-center justify-center gap-2 rounded-2xl border border-line px-1 py-3 text-[clamp(0.5rem,2.2vw,0.625rem)] font-semibold transition-colors sm:text-xs",
                   isActive
-                    ? "orange-action border-transparent text-white"
-                    : "bg-gradient-to-b from-surface to-paper text-ink-soft shadow-xs hover:bg-surface-hover",
+                    ? "border-orange-400/60 bg-gradient-to-br from-orange-400 via-orange-500 to-orange-600 text-white shadow-[inset_0_1px_0_#ffffff35,0_3px_12px_#0003]"
+                    : "bg-gradient-to-b from-surface to-paper text-ink-soft shadow-sm hover:bg-surface-hover",
                 )}
               >
                 <Icon aria-hidden className="size-6 shrink-0" strokeWidth={1.5} />
-                <span className="text-center leading-tight lg:whitespace-nowrap">{label === "Acompanhamentos" ? <><span className="lg:hidden">Acomp.</span><span className="hidden lg:inline">{label}</span></> : label}</span>
+                <span className="text-center leading-tight">{presentation?.label ?? category.name}</span>
               </button>
             </li>
           );
@@ -105,7 +124,7 @@ export function CategoryRail({ categories }: { categories: Category[] }) {
   const active = useActiveSection(ids);
 
   return (
-    <nav aria-label="Categorias" className="sticky top-24 hidden lg:block">
+    <nav aria-label="Categorias" className="sticky top-28 hidden lg:block">
       <p className="mb-3 px-3 text-[0.6875rem] font-bold uppercase tracking-[0.08em] text-ink-faint">
         Cardápio
       </p>
@@ -121,7 +140,7 @@ export function CategoryRail({ categories }: { categories: Category[] }) {
                 onClick={() => scrollToSection(id)}
                 aria-current={isActive ? "true" : undefined}
                 className={cn(
-                  "relative w-full rounded-sm px-3 py-2 text-left text-sm transition-colors",
+                  "relative w-full rounded-sm px-3 py-3 text-left text-base transition-colors",
                   isActive
                     ? "bg-brand-soft font-bold text-[var(--store-brand)]"
                     : "font-medium text-ink-soft hover:bg-surface-hover hover:text-ink",

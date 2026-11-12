@@ -193,7 +193,7 @@ export function CartPanel() {
   const belowMinimum = totals.missingForMinimumCents > 0;
 
   return (
-    <aside className="sticky top-24 hidden lg:block" aria-label="Sua sacola">
+    <aside className="sticky top-28 hidden lg:block" aria-label="Sua sacola">
       <div className="flex max-h-[calc(100dvh-8rem)] flex-col overflow-hidden rounded-lg bg-surface shadow-sm hairline">
         <div className="flex shrink-0 items-center justify-between border-b border-line px-5 py-4">
           <h2 className="font-display text-[1.375rem] leading-none text-ink">

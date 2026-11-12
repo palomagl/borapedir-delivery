@@ -11,10 +11,10 @@ const inter = Inter({
 });
 
 /** Display: condensada, caixa alta, com a presença que a marca pede. */
-const storeFont = Poppins({
-  variable: "--font-store",
+const productFont = Poppins({
+  variable: "--font-product",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800", "900"],
+  weight: ["400", "500", "600", "700", "800"],
   display: "swap",
 });
 
@@ -65,7 +65,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR" className={`${inter.variable} ${bebas.variable} ${storeFont.variable}`}>
+    <html lang="pt-BR" className={`${inter.variable} ${bebas.variable} ${productFont.variable}`}>
       <body className="min-h-dvh antialiased">
         {children}
         <Toaster />

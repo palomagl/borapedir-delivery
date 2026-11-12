@@ -65,7 +65,6 @@ export function Button({
   return (
     <Comp
       data-slot="button"
-      data-variant={variant ?? "primary"}
       className={cn(buttonVariants({ variant, size, block }), className)}
       disabled={disabled || loading}
       aria-busy={loading || undefined}
