@@ -23,7 +23,7 @@ import { Button } from "@/components/ui/button";
 import { Field, Input, Textarea } from "@/components/ui/field";
 import { lineTotalCents } from "@/domain/cart";
 import { formatCents } from "@/domain/money";
-import { addressSchema, phoneSchema } from "@/domain/schemas";
+import { checkoutFormSchema as formSchema } from "@/domain/checkout-form-schema";
 import type { PaymentMethod, ServiceMode } from "@/domain/types";
 import { formatPhone, PAYMENT_LABELS } from "@/lib/format";
 import { rememberOrder } from "@/lib/my-orders";
@@ -46,37 +46,6 @@ const STEPS = [
 ] as const;
 
 type StepId = (typeof STEPS)[number]["id"];
-
-const formSchema = z
-  .object({
-    serviceMode: z.enum(["delivery", "pickup"]),
-    customerName: z.string().trim().min(2, "Informe seu nome").max(80),
-    customerPhone: phoneSchema,
-    address: addressSchema.partial().optional(),
-    paymentMethod: z.enum(["pix", "credit", "debit", "cash", "meal_voucher"]),
-    changeFor: z.string().trim().optional(),
-    note: z.string().trim().max(240).optional(),
-  })
-  // Endereço só é exigido quando o pedido é entregue — e aí cada campo
-  // aponta o próprio erro, em vez de um aviso genérico no topo.
-  .superRefine((data, ctx) => {
-    if (data.serviceMode !== "delivery") return;
-
-    const required = [
-      ["street", "Informe a rua"],
-      ["number", "Informe o número"],
-      ["district", "Informe o bairro"],
-      ["city", "Informe a cidade"],
-      ["state", "Informe a UF"],
-    ] as const;
-
-    for (const [field, message] of required) {
-      const value = data.address?.[field];
-      if (!value || value.trim() === "") {
-        ctx.addIssue({ code: "custom", path: ["address", field], message });
-      }
-    }
-  });
 
 type FormValues = z.infer<typeof formSchema>;
 
@@ -116,6 +85,10 @@ export function CheckoutForm() {
       note: "",
     },
   });
+
+  React.useEffect(() => {
+    if (hydrated && form.getValues("serviceMode") !== serviceMode) form.setValue("serviceMode", serviceMode);
+  }, [hydrated, serviceMode, form]);
 
   // useWatch assina o campo em vez de devolver uma função nova a cada render,
   // que é o que o compilador do React não consegue memoizar com segurança.

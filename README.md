@@ -26,7 +26,7 @@ Cada projeto tem dependências, configuração, banco e hospedagem próprios. As
 
 ## Hospedagem
 
-- BRUTO: pasta principal `bruto-hamburgueria`. O caminho `bruto` é um atalho de compatibilidade para a hospedagem já configurada; não há uma segunda cópia do projeto. Em uma nova configuração, selecione `bruto-hamburgueria` como Root Directory.
+- BRUTO: pasta principal `bruto-hamburgueria`. O caminho `bruto` contém somente a entrada técnica de compatibilidade da hospedagem já configurada. O build usa o código de `bruto-hamburgueria`; não edite o projeto pela pasta técnica. Em uma nova configuração, selecione `bruto-hamburgueria` como Root Directory.
 - ROXO: criar projeto separado de hospedagem com Root Directory `roxo-açai`.
 
 A organização por pastas identifica o estabelecimento; ela não altera suas rotas públicas nem mistura os dados das lojas.

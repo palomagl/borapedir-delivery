@@ -2,7 +2,7 @@
 @import "tw-animate-css";
 
 @theme {
-  
+
   --color-paper: #faf8f5;
   --color-paper-sunken: #f1edf3;
   --color-surface: #ffffff;
@@ -20,7 +20,7 @@
   --color-brand: #651875;
   --color-brand-hover: #7b238b;
   --color-brand-active: #4c1059;
-  
+
   --color-brand-soft: #f2e6f5;
   --color-brand-soft-hover: #e9d4ee;
   --color-ember: #8b3f1f;
@@ -130,7 +130,7 @@
 }
 
 @layer utilities {
-  
+
   .hairline {
     box-shadow: inset 0 0 0 1px var(--color-line);
   }

@@ -30,7 +30,7 @@ export const addressSchema = z.object({
 export const cartItemSchema = z.object({
   productId: z.string().min(1),
   /** Só os ids: nome e preço vêm do catálogo no servidor. */
-  optionIds: z.array(z.string().min(1)).max(20),
+  optionIds: z.array(z.string().min(1)).max(60),
   quantity: z.number().int().min(1).max(99),
   note: z.string().trim().max(180).nullish(),
 });
