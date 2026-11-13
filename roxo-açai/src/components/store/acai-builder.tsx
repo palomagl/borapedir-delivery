@@ -13,11 +13,12 @@ import type { OptionGroup, Product, ProductOption } from "@/domain/types";
 const EMOJI: Record<string, string> = { Banana: "🍌", Morango: "🍓", Manga: "🥭", Uva: "🍇", Kiwi: "🥝", "Coco ralado": "🥥", "Gotas de chocolate": "🍫", "Leite em pó": "🥛", Paçoca: "🥜", Amendoim: "🥜", "Creme de pistache": "🌿" };
 function selection(group: OptionGroup, option: ProductOption): CartSelection { return { groupId: group.id, groupName: group.name, optionId: option.id, optionName: option.name, priceDeltaCents: option.priceDeltaCents }; }
 function defaults(product: Product) { return product.optionGroups.flatMap(g => { const o=g.options.find(o=>o.available&&o.priceDeltaCents===0); return g.minSelect===1&&g.maxSelect===1&&o ? [selection(g,o)] : []; }); }
-export function AcaiBuilder({ products }: { products: Product[] }) {
+export function AcaiBuilder({ products, initialProductSlug }: { products: Product[]; initialProductSlug?: string }) {
   const { addItem, store } = useStore();
   const router = useRouter();
-  const [product, setProduct] = React.useState(products[1] ?? products[0]);
-  const [chosen, setChosen] = React.useState<CartSelection[]>(()=>defaults(products[1] ?? products[0]));
+  const initialProduct = products.find(p => p.slug === initialProductSlug) ?? products[1] ?? products[0];
+  const [product, setProduct] = React.useState(initialProduct);
+  const [chosen, setChosen] = React.useState<CartSelection[]>(()=>defaults(initialProduct));
   const [quantity, setQuantity] = React.useState(1);
   const [note, setNote] = React.useState("");
   const [extrasOpen, setExtrasOpen] = React.useState(false);

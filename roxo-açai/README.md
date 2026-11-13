@@ -1,6 +1,6 @@
 # ROXO — Açaí do seu jeito
 
-Projeto independente de açaí dentro do Bora Pedir. A experiência começa pela montagem do copo: não há receitas prontas. Interface clara em roxo, lilás e verde, feita primeiro para celular.
+Projeto independente de açaí dentro do Bora Pedir. A entrada começa pela escolha do que comprar: copos, combos, felicidade, 1 litro, barcas/bowls/box ou bebidas. Depois o cliente escolhe o tamanho/produto e só então personaliza. Não há receitas prontas. Interface clara em roxo, lilás e verde, feita primeiro para celular.
 
 ## Rodar
 
