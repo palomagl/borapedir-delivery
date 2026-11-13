@@ -118,6 +118,8 @@ export interface OrderItemRow {
 }
 
 export interface OrderRow {
+  loyalty_account_id?: string | null;
+  loyalty_redemption_id?: string | null;
   id: string;
   store_id: string;
   number: number;
@@ -283,6 +285,8 @@ function toOrderItem(row: OrderItemRow): OrderItem {
 export function toOrder(row: OrderRow): Order {
   return {
     id: row.id,
+    loyaltyAccountId: row.loyalty_account_id ?? null,
+    loyaltyRedemptionId: row.loyalty_redemption_id ?? null,
     storeId: row.store_id,
     number: row.number,
     status: row.status,

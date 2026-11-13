@@ -1,5 +1,6 @@
 "use client";
 
+import { IngredientPhoto } from "@/components/store/ingredient-photo";
 import { Check } from "lucide-react";
 import * as React from "react";
 import { toast } from "sonner";
@@ -298,7 +299,7 @@ function OptionGroupFieldset({
             )}
             role={error ? "alert" : undefined}
           >
-            {error ?? groupHelperText(group)}
+            {error ?? `${groupHelperText(group)}${!single ? ` · ${chosen.length}/${group.maxSelect} selecionados` : ""}`}
           </p>
         </div>
 
@@ -319,7 +320,12 @@ function OptionGroupFieldset({
           const isChosen = chosen.some((selection) => selection.optionId === option.id);
           const disabled = !option.available || (full && !isChosen);
 
+          const fruitNames = ["Banana","Morango","Kiwi","Abacaxi"];
+          const split = /inclusos/i.test(group.name) && group.options.some(o=>fruitNames.includes(o.name)) && group.options.some(o=>!fruitNames.includes(o.name));
+          const sectionStart = split && (index === 0 || fruitNames.includes(option.name) !== fruitNames.includes(group.options[index-1].name));
           return (
+            <React.Fragment key={option.id}>
+            {sectionStart && <p className="border-y border-line bg-paper px-3.5 py-2 text-xs font-bold">{fruitNames.includes(option.name) ? "Frutas inclusas" : "Outros complementos inclusos"}</p>}
             <label
               key={option.id}
               className={cn(
@@ -356,7 +362,8 @@ function OptionGroupFieldset({
                 ) : null}
               </span>
 
-              <span className="min-w-0 flex-1 text-[0.9375rem] leading-snug text-ink">
+              <IngredientPhoto name={option.name} className="size-12" />
+              <span className="min-w-0 flex-1 text-[0.875rem] leading-snug text-ink">
                 {option.name}
                 {option.available ? null : (
                   <span className="ml-1.5 text-[0.8125rem] text-ink-muted">· esgotado</span>
@@ -372,6 +379,7 @@ function OptionGroupFieldset({
                 </span>
               ) : null}
             </label>
+            </React.Fragment>
           );
         })}
       </div>

@@ -27,6 +27,8 @@ import { checkoutFormSchema as formSchema } from "@/domain/checkout-form-schema"
 import type { PaymentMethod, ServiceMode } from "@/domain/types";
 import { formatPhone, PAYMENT_LABELS } from "@/lib/format";
 import { rememberOrder } from "@/lib/my-orders";
+import { readLoyalty } from "@/server/actions/loyalty";
+import { effectivePriceCents } from "@/domain/catalog";
 import { createOrder } from "@/server/actions/orders";
 import { cn } from "@/lib/utils";
 
@@ -65,12 +67,19 @@ const PAYMENT_ICONS: Record<PaymentMethod, React.ComponentType<{ className?: str
 };
 
 export function CheckoutForm() {
-  const { store, lines, totals, serviceMode, setServiceMode, clearCart, hydrated, isOpen } =
+  const { store, lines, totals, serviceMode, setServiceMode, clearCart, hydrated, isOpen, getProduct } =
     useStore();
   const router = useRouter();
 
   const [step, setStep] = React.useState<StepId>("entrega");
   const [submitting, setSubmitting] = React.useState(false);
+  const [availableRewards, setAvailableRewards] = React.useState(0);
+  const [useReward, setUseReward] = React.useState(false);
+  React.useEffect(() => { readLoyalty(store.slug).then(state => setAvailableRewards(state?.available ?? 0)).catch(() => {}); }, [store.slug]);
+  const rewardProduct = lines.map(line => getProduct(line.productId)).find(product => product?.slug === "copo-300");
+  const rewardDiscount = useReward && rewardProduct ? effectivePriceCents(rewardProduct) : 0;
+  const finalTotal = Math.max(0, totals.totalCents - rewardDiscount);
+  const belowRewardMinimum = useReward && serviceMode === "delivery" && totals.subtotalCents - rewardDiscount < store.minOrderCents;
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -130,6 +139,7 @@ export function CheckoutForm() {
 
     const result = await createOrder(store.slug, {
       ...values,
+      redeemLoyalty: useReward,
       address: values.serviceMode === "delivery" ? values.address : null,
       note: values.note || null,
       changeFor: values.paymentMethod === "cash" ? values.changeFor || null : null,
@@ -370,7 +380,7 @@ export function CheckoutForm() {
                   label="Precisa de troco para quanto?"
                   optional
                   inputMode="decimal"
-                  placeholder={formatCents(totals.totalCents)}
+                  placeholder={formatCents(finalTotal)}
                   hint="Deixe em branco se tiver o valor exato."
                 />
               </div>
@@ -403,8 +413,11 @@ export function CheckoutForm() {
               ))}
             </ul>
 
+            <div className="mt-5 rounded-xl border border-line bg-brand-soft p-4">
+              {(availableRewards > 0 || useReward) && rewardProduct ? <label className="flex cursor-pointer items-start gap-3 text-sm"><input type="checkbox" checked={useReward} onChange={event => setUseReward(event.target.checked)} className="mt-1 accent-brand"/><span><strong>Usar meu copo de 300 ml grátis</strong><span className="mt-1 block text-xs leading-relaxed text-ink-muted">Desconto na base de 1 copo. Cremes, outros adicionais pagos e entrega continuam cobrados.</span></span></label> : <p className="text-xs leading-relaxed text-ink-muted">{availableRewards > 0 ? "Você tem recompensa! Adicione um copo de 300 ml à sacola para usar." : "Este pedido vai para seu cartão ROXO. O selo entra quando a loja concluir; a cada 10, você ganha um copo de 300 ml."}</p>}
+            </div>
             <div className="mt-4 border-t border-line pt-4">
-              <CartSummary />
+              <CartSummary loyaltyDiscountCents={rewardDiscount} />
             </div>
 
             <div className="mt-5">
@@ -443,13 +456,13 @@ export function CheckoutForm() {
         ) : null}
 
         {step === "revisao" ? (
-          <Button key="confirm-order" type="submit" size="lg" className="flex-1" loading={submitting} disabled={!isOpen}>
+          <Button key="confirm-order" type="submit" size="lg" className="flex-1" loading={submitting} disabled={!isOpen || belowRewardMinimum}>
             <Check />
             <span>Confirmar pedido</span>
             <span aria-hidden className="opacity-50">
               ·
             </span>
-            <span data-price>{formatCents(totals.totalCents)}</span>
+            <span data-price>{formatCents(finalTotal)}</span>
           </Button>
         ) : (
           <Button key="next-step" type="button" size="lg" className="flex-1" onClick={(event) => { event.preventDefault(); void goNext(); }}>

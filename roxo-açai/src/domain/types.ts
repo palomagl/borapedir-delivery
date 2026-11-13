@@ -181,6 +181,8 @@ export interface OrderItem {
 }
 
 export interface Order {
+  loyaltyAccountId?: string | null;
+  loyaltyRedemptionId?: string | null;
   id: ID;
   storeId: ID;
   /** Sequencial por loja, exibido ao cliente e à cozinha. */

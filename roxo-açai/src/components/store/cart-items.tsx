@@ -126,7 +126,7 @@ export function CartLineItem({ line, compact = false }: { line: CartLine; compac
 
 /* ------------------------------------------------------------------- Resumo */
 
-export function CartSummary({ className }: { className?: string }) {
+export function CartSummary({ className, loyaltyDiscountCents=0 }: { className?: string; loyaltyDiscountCents?: number }) {
   const { totals, serviceMode, store } = useStore();
 
   return (
@@ -142,6 +142,7 @@ export function CartSummary({ className }: { className?: string }) {
               : formatCents(totals.deliveryFeeCents)
         }
       />
+      {loyaltyDiscountCents > 0 && <Row label="Copo grátis · Clube ROXO" value={`− ${formatCents(loyaltyDiscountCents)}`} tone="success" />}
       {totals.discountCents > 0 ? (
         <Row label="Desconto" value={`− ${formatCents(totals.discountCents)}`} tone="success" />
       ) : null}
@@ -149,13 +150,13 @@ export function CartSummary({ className }: { className?: string }) {
       <div className="flex items-baseline justify-between border-t border-line pt-3">
         <dt className="text-[0.9375rem] font-bold text-ink">Total</dt>
         <dd data-price className="text-lg font-bold tracking-[-0.025em] text-ink">
-          {formatCents(totals.totalCents)}
+          {formatCents(Math.max(0, totals.totalCents - loyaltyDiscountCents))}
         </dd>
       </div>
 
-      {totals.missingForMinimumCents > 0 ? (
+      {serviceMode === "delivery" && totals.subtotalCents - loyaltyDiscountCents < store.minOrderCents ? (
         <p className="!mt-3 rounded-md bg-warning-soft px-3 py-2.5 text-[0.8125rem] font-medium text-warning">
-          Faltam <span data-price>{formatCents(totals.missingForMinimumCents)}</span> para o pedido
+          Faltam <span data-price>{formatCents(Math.max(0, store.minOrderCents - totals.subtotalCents + loyaltyDiscountCents))}</span> para o pedido
           mínimo de <span data-price>{formatCents(store.minOrderCents)}</span>.
         </p>
       ) : null}

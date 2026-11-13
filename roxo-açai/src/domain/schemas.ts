@@ -38,6 +38,7 @@ export const cartItemSchema = z.object({
 export const checkoutSchema = z
   .object({
     serviceMode: z.enum(["delivery", "pickup"]),
+    redeemLoyalty: z.boolean().optional().default(false),
     customerName: z.string().trim().min(2, "Informe seu nome").max(80),
     customerPhone: phoneSchema,
     address: addressSchema.nullish(),

@@ -1,5 +1,6 @@
 "use server";
 
+import { ensureLoyaltyAccount, reserveReward, releaseReward, commitSeedReward, cancelSeedReward } from "@/server/loyalty/service";
 import { revalidatePath } from "next/cache";
 import { effectivePriceCents, isStoreOpen } from "@/domain/catalog";
 import { parseToCents, sumCents } from "@/domain/money";
@@ -82,14 +83,18 @@ export async function createOrder(
   const subtotalCents = sumCents(items.map((item) => item.totalCents));
   const deliveryFeeCents = input.serviceMode === "delivery" ? store.deliveryFeeCents : 0;
 
-  if (input.serviceMode === "delivery" && subtotalCents < store.minOrderCents) {
+  const rewardProduct = products.find(product => product.slug === "copo-300");
+  const rewardItem = rewardProduct && items.find(item => item.productId === rewardProduct.id);
+  if (input.redeemLoyalty && !rewardItem) return { ok: false, error: "Adicione um copo de 300 ml para usar sua recompensa." };
+  const discountCents = input.redeemLoyalty && rewardProduct ? effectivePriceCents(rewardProduct) : 0;
+  if (input.serviceMode === "delivery" && subtotalCents - discountCents < store.minOrderCents) {
     return { ok: false, error: "O pedido não atinge o valor mínimo para entrega." };
   }
 
   const changeForCents =
     input.paymentMethod === "cash" && input.changeFor ? parseToCents(input.changeFor) : null;
 
-  const totalCents = subtotalCents + deliveryFeeCents;
+  const totalCents = subtotalCents + deliveryFeeCents - discountCents;
 
   if (changeForCents !== null && changeForCents > 0 && changeForCents < totalCents) {
     return {
@@ -99,8 +104,19 @@ export async function createOrder(
     };
   }
 
+  let account;
+  let redemptionId: string | null = null;
+  try {
+    account = await ensureLoyaltyAccount(store.id);
+    if (input.redeemLoyalty) redemptionId = await reserveReward(account);
+  } catch (error) {
+    return { ok: false, error: error instanceof Error ? error.message : "Não foi possível validar a fidelidade." };
+  }
+
   const newOrder: NewOrder = {
     storeId: store.id,
+    loyaltyAccountId: account.id,
+    loyaltyRedemptionId: redemptionId,
     serviceMode: input.serviceMode,
     customerId: null,
     customerName: input.customerName,
@@ -123,17 +139,24 @@ export async function createOrder(
     changeForCents: changeForCents && changeForCents > 0 ? changeForCents : null,
     subtotalCents,
     deliveryFeeCents,
-    discountCents: 0,
+    discountCents,
     totalCents,
     note: input.note ?? null,
     items,
   };
 
-  const order = await source.createOrder(newOrder);
+  let order: Order;
+  try { order = await source.createOrder(newOrder); }
+  catch {
+    if (redemptionId) await releaseReward(redemptionId, account);
+    return { ok: false, error: "Não foi possível salvar seu pedido. Tente novamente; a recompensa não foi consumida." };
+  }
+  if (redemptionId) commitSeedReward(redemptionId, order.id);
 
   revalidatePath(`/${storeSlug}/pedidos`);
-  revalidatePath("/admin/pedidos");
-  revalidatePath("/admin");
+  revalidatePath("/admin/[store]/pedidos", "page");
+  revalidatePath("/admin/[store]", "page");
+  revalidatePath("/[store]/fidelidade", "page");
 
   return { ok: true, data: { orderId: order.id, orderNumber: order.number } };
 }
@@ -175,7 +198,7 @@ function buildOrderItem(
   }
 
   // Sobrou id que não pertence a nenhum grupo deste produto.
-  if (chosen.size > 0) return { error: `Opção inválida em ${product.name}.` };
+  if (chosen.size > 0) return { error: `O cardápio mudou ou há uma opção inválida em ${product.name}. Edite o item na sacola para revisar os complementos.` };
 
   const unitPriceCents = effectivePriceCents(product);
   const unitWithOptions = unitPriceCents + sumCents(options.map((option) => option.priceDeltaCents));
@@ -233,9 +256,11 @@ export async function advanceOrderStatus(
   }
 
   const updated = await source.updateOrderStatus(storeId, orderId, status);
+  if (status === "canceled" && updated.loyaltyRedemptionId) cancelSeedReward(updated.loyaltyRedemptionId);
 
-  revalidatePath("/admin/pedidos");
-  revalidatePath("/admin");
+  revalidatePath("/admin/[store]/pedidos", "page");
+  revalidatePath("/admin/[store]", "page");
+  revalidatePath("/[store]/fidelidade", "page");
 
   return { ok: true, data: updated };
 }

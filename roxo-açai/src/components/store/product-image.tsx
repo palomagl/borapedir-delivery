@@ -2,6 +2,8 @@
 
 import { ImageOff } from "lucide-react";
 import Image from "next/image";
+import { parsePhoto } from "@/lib/roxo-media";
+import { PhotoAtlas } from "@/components/store/ingredient-photo";
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
@@ -36,6 +38,8 @@ export function ProductImage({ src, alt, sizes, className, priority }: ProductIm
     );
   }
 
+  const photo = parsePhoto(src);
+  if (photo.columns > 1) return <PhotoAtlas photo={photo} alt={alt} sizes="1024px" className={className} />;
   return (
     <Image
       src={src}

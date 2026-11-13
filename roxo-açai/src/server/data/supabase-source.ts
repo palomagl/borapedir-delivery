@@ -232,6 +232,8 @@ export const supabaseDataSource: DataSource = {
       .from("orders")
       .insert({
         store_id: input.storeId,
+        loyalty_account_id: input.loyaltyAccountId ?? null,
+        loyalty_redemption_id: input.loyaltyRedemptionId ?? null,
         status: input.status ?? "pending",
         service_mode: input.serviceMode,
         customer_id: input.customerId,
